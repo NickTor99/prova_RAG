@@ -1,0 +1,886 @@
+{
+    "type": "test with additional information",
+    "date": "09/05/2025-15:37",
+    "results": [
+        {
+            "name": "Arbitrary delete",
+            "results": [
+                {
+                    "contract_id": "pyteal1.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Arbitrary delete",
+                            "status": "vulnerable",
+                            "description": "The contract does not implement a check to restrict deletion to the creator. The condition `is_delete_application` only checks if the transaction is a DeleteApplication and if the application ID is not zero, but it does not verify that the sender is the creator. This allows any user to delete the application, leading to potential loss of state and funds."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "vulnerable",
+                            "description": "The contract does not include any validation for the transaction fee, making it vulnerable to the Unchecked Transaction Fee vulnerability. Attackers could submit transactions with abnormally high fees, potentially draining funds from other users. The contract should implement a check to ensure that the transaction fee is within a reasonable limit, such as `Txn.fee() <= Int(1000)`."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "not vulnerable",
+                            "description": "The provided PyTeal smart contract does not include any logic related to Asset Transfer Transactions (ASA transfers), which is the precondition for the Unchecked Asset Receiver vulnerability. Therefore, the vulnerability cannot be triggered in this context."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal2.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Arbitrary delete",
+                            "status": "vulnerable",
+                            "description": "The contract does not restrict deletion to the creator, allowing any sender to delete the application. The condition `is_delete_application` checks for the transaction type and application ID but lacks a sender verification against the creator's address, making it vulnerable to arbitrary deletion by any attacker."
+                        },
+                        {
+                            "vulnerability_name": "Arbitrary update",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly mitigates the arbitrary update vulnerability by ensuring that the UpdateApplication transaction can only be processed if the sender is the zero address (Global.zero_address()), effectively disabling updates. This is enforced in the is_update_application condition within the approval_program function."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "not vulnerable",
+                            "description": "The provided PyTeal smart contract does not include any logic for handling Asset Transfer Transactions (ASA transfers), which is the precondition for the Unchecked Asset Receiver vulnerability. Since the contract does not process such transactions, the vulnerability cannot be triggered. The contract primarily deals with application transactions (delete, opt-in, update, close-out) and payment transactions, with checks for rekeying and transaction arguments, but lacks any functionality related to asset transfers."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal3.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Arbitrary delete",
+                            "status": "vulnerable",
+                            "description": "The contract is vulnerable to arbitrary deletion as it does not restrict the deletion to the creator. The 'delete_contract' condition simply approves any DeleteApplication transaction without checking the sender's address against the creator's address, allowing any user to delete the contract and potentially cause loss of state and funds."
+                        },
+                        {
+                            "vulnerability_name": "Arbitrary update",
+                            "status": "not vulnerable",
+                            "description": "The contract does not handle the UpdateApplication call, which means there is no functionality to update the application logic. Therefore, the precondition for the vulnerability is not satisfied, making the contract not vulnerable to arbitrary updates."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal4.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Arbitrary delete",
+                            "status": "vulnerable",
+                            "description": "The contract does not restrict deletion to the creator, allowing any sender to delete the contract. The 'delete_contract' condition simply approves the deletion without checking the sender's address against the creator's address, making it vulnerable to arbitrary deletion attacks."
+                        },
+                        {
+                            "vulnerability_name": "Arbitrary update",
+                            "status": "not vulnerable",
+                            "description": "The contract does not handle UpdateApplication calls, thus the vulnerability cannot be triggered. The contract only processes NoOp and DeleteApplication transactions, with specific checks for initialization and deletion. There is no logic to update the application, making it inherently safe from arbitrary updates."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal5.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Arbitrary delete",
+                            "status": "vulnerable",
+                            "description": "The contract does not restrict the deletion of the application to the creator. The condition [Txn.on_completion() == OnComplete.DeleteApplication, Return(Int(1))] allows any sender to delete the application, which could lead to permanent loss of state and funds."
+                        },
+                        {
+                            "vulnerability_name": "Arbitrary update",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly implements a security check for the UpdateApplication transaction by verifying that the sender is the creator of the application (is_creator = Txn.sender() == App.globalGet(Bytes('Creator'))). This ensures that only the creator can update the application, mitigating the risk of arbitrary updates by attackers."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "not vulnerable",
+                            "description": "The provided PyTeal smart contract does not handle Asset Transfer Transactions (ASA transfers) and therefore does not include any logic related to the AssetReceiver field. Since the contract is focused on application calls and voting mechanisms without any asset transfer functionality, the precondition for the vulnerability is not met."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Arbitrary update",
+            "results": [
+                {
+                    "contract_id": "pyteal10.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Arbitrary update",
+                            "status": "vulnerable",
+                            "description": "The contract allows updates to the application without restricting the sender to the creator or disabling updates entirely. The UpdateApplication condition in the contract does not check if the sender is the creator (Global.creator_address()) or if the sender is the zero address (Global.zero_address()), making it vulnerable to arbitrary updates by any sender."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly validates the receiver address in payment transactions by ensuring that the receiver is the current application address (Global.current_application_address()). This prevents unauthorized redirection of funds to other addresses, thus mitigating the Unchecked Payment Receiver vulnerability."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal6.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Arbitrary update",
+                            "status": "vulnerable",
+                            "description": "The contract allows updates to the admin key without verifying the sender is the current admin or creator, making it vulnerable to arbitrary updates. The update_admin function checks the transaction type and argument length but does not verify the sender's authority, allowing any user to change the admin key."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the receiver address in payment transactions (Gtxn[0] and Gtxn[2]) within the handle_operation function, which could allow unauthorized redirection of funds. The precondition for the vulnerability is met as the contract processes payment transactions without checking the receiver address against a whitelist or expected value."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal7.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Arbitrary update",
+                            "status": "vulnerable",
+                            "description": "The contract allows updates to the application without verifying the sender is the creator or an authorized admin. The 'update_admin' function checks the number of application arguments and the transaction type but does not enforce that the sender is the current admin or creator, making it vulnerable to arbitrary updates by any sender."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the receiver address in payment transactions (Gtxn[0] and Gtxn[2]) within the handle_operation function, allowing potential redirection of funds to unauthorized addresses. The required security check to ensure payments only go to whitelisted addresses is missing."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal8.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Arbitrary update",
+                            "status": "vulnerable",
+                            "description": "Vulnerable: The contract allows any sender to update the application logic without verifying if the sender is the creator or disabling updates entirely. The condition 'is_update_application' only checks for the transaction type but does not restrict the sender, making it susceptible to malicious updates."
+                        },
+                        {
+                            "vulnerability_name": "Arbitrary delete",
+                            "status": "not vulnerable",
+                            "description": "The contract does not include any logic to handle DeleteApplication transactions, making it impossible for an attacker to delete the contract. The approval_program only checks for UpdateApplication transactions and approves them without any sender validation, but since DeleteApplication is not handled, the vulnerability cannot be triggered."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal9.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Arbitrary update",
+                            "status": "vulnerable",
+                            "description": "The contract allows arbitrary updates without restricting the sender to the creator or disabling updates entirely. The condition [Txn.on_completion() == OnComplete.UpdateApplication, update] does not check the sender's address against the creator's address or any other restrictive condition, making it vulnerable to malicious updates."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The provided PyTeal smart contract does not include any payment transactions (TxnType.Payment) or logic that could trigger the Unchecked Payment Receiver vulnerability. The contract focuses on application global state updates and does not handle ALGO or ASA transfers, thus the vulnerability cannot be triggered."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Unchecked Asset Close To",
+            "results": [
+                {
+                    "contract_id": "pyteal11.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "vulnerable",
+                            "description": "The contract is vulnerable due to the logic in txn3 where the fee check is part of an OR condition with other assertions. This means the transaction could pass without enforcing the fee limit if any of the other conditions are met. The correct implementation should ensure the fee check is mandatory and not optional within an OR condition."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "vulnerable",
+                            "description": "The contract does not check the 'asset_close_to' field in asset transfer transactions (txn2 and txn4), which could allow attackers to drain remaining assets from a delegated account. The required security check to ensure 'asset_close_to' is set to 'Global.zero_address()' is missing in these transactions."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal12.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "vulnerable",
+                            "description": "The contract does not check the 'asset_close_to' field in the second asset transfer transaction (txn_1), which could allow an attacker to drain all remaining assets from a delegated account. While the first asset transfer transaction (txn_0) correctly checks 'asset_close_to' against 'Global.zero_address()', the second transaction (txn_1) lacks this critical security check, making the contract vulnerable to the 'Unchecked Asset Close To' vulnerability."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly checks that the 'close_remainder_to' field is set to 'Global.zero_address()' in the payment transaction (txn_2), ensuring that no funds can be drained from the account. Additionally, the contract validates other critical fields such as 'rekey_to' and ensures the transaction type and amounts are as expected, providing comprehensive security against the vulnerability."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Rekey To",
+                            "status": "not vulnerable",
+                            "description": "The smart contract correctly implements the required security checks for the 'rekey_to' field in all transactions (txn_0, txn_1, txn_2) by ensuring it is set to 'Global.zero_address()'. This prevents the Rekey-To vulnerability by not allowing any transaction in the group to change the account's authorization to another address."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal13.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly validates the AssetReceiver field in Asset Transfer Transactions by ensuring the receiver is a specific whitelisted address (BN2R5VU5TF2U7JM4DDYN4UGJBPGO7CMCKAPCRSPAD6KXBJLWP53JCDFLG4). Additionally, it checks for other transaction fields such as fee, asset amount, note, and rekey_to to ensure no unauthorized actions can be performed. The precondition for the vulnerability is met (TxnType.AssetTransfer), but the required security checks are fully and correctly implemented."
+                        },
+                        {
+                            "vulnerability_name": "Arbitrary delete",
+                            "status": "not vulnerable",
+                            "description": "The provided PyTeal smart contract does not include any logic for handling DeleteApplication transactions, thus the vulnerability cannot be triggered. The contract focuses on validating a single asset transfer transaction with specific constraints, and there is no precondition that would allow for contract deletion."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The provided PyTeal smart contract does not include any payment transactions that could trigger the 'Unchecked Close Remainder To' vulnerability. The contract only validates asset transfer transactions, specifically checking for type, fee, asset transfer details, receiver, amount, note, and rekey_to fields. Since there are no payment transactions in the group, the vulnerability cannot be triggered, making the contract not vulnerable to this specific issue."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Rekey To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly implements the required security check by validating that the 'rekey_to' field is set to 'Global.zero_address()' in the transaction. This ensures that no transaction can change the authorization of the account, mitigating the rekey vulnerability. The check is part of a comprehensive validation that includes verifying the transaction type, fee, asset transfer details, and note, making the contract secure against the specified attack scenario."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal14.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the AssetReceiver field in the Asset Transfer Transaction (tx5_check), allowing potential redirection of tokens to unauthorized addresses. The check for the asset receiver is missing, which is crucial for ensuring tokens are only sent to whitelisted addresses."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract implements fee checks for all transactions in the group, ensuring that no transaction can bypass the expected fee cap. Specifically, Gtxn[0].fee() <= Int(1500), Gtxn[1].fee() <= Int(1500), Gtxn[2].fee() <= Int(1500), Gtxn[3].fee() <= Int(1500), and Gtxn[4].fee() <= Int(2000) are correctly enforced, mitigating the risk of fee exploitation."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly checks the 'close_remainder_to' field in all payment transactions (Gtxn[0] to Gtxn[3]), ensuring it is set to 'Global.zero_address()'. This prevents the vulnerability where an attacker could drain remaining funds from a delegated account. Each transaction in the group is individually validated for this condition, along with other necessary checks, making the contract secure against this specific vulnerability."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal15.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the asset_receiver field in Asset Transfer Transactions (ASA transfers) for Gtxn[0] and Gtxn[1], which could allow attackers to redirect tokens to unauthorized addresses. The checks for asset transfers include fee, rekey_to, xfer_asset, and asset_amount but omit the critical asset_receiver validation against a whitelisted address."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not properly validate the recipient address in payment transactions (TxnType.Payment). While it checks that the receiver is not the sender of the first asset transfer transaction (Gtxn[2].receiver() != Gtxn[0].sender()), it fails to ensure payments only go to whitelisted addresses. This missing validation allows attackers to redirect funds to unauthorized addresses."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly implements fee checks for all transactions in the group. Each transaction (Gtxn[0], Gtxn[1], Gtxn[2]) has a fee cap (<= 2500 microALGO for asset transfers and <= 1500 microALGO for payments), ensuring no transaction can bypass the expected fee limits. Additionally, the contract validates other critical fields like rekey_to and close_remainder_to, further securing the transactions."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "vulnerable",
+                            "description": "The contract does not check the 'asset_close_to' field in asset transfer transactions (Gtxn[0] and Gtxn[1]), which could allow attackers to drain remaining assets from a delegated account by setting 'asset_close_to' to their own address. The required security check to ensure 'asset_close_to' is set to 'Global.zero_address()' is missing."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Unchecked Close Remainder To",
+            "results": [
+                {
+                    "contract_id": "pyteal16.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly implements a fee check with 'Txn.fee() <= Int(1000)' as part of the 'periodic_pay_core' conditions, ensuring that the transaction fee does not exceed the cap of 1000 microALGOs. This mitigates the risk of attackers submitting transactions with abnormally high fees."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Rekey To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly implements the security check for the 'rekey_to' field by ensuring it is set to 'Global.zero_address()' in the 'periodic_pay_core' condition. This check is part of the core conditions that must be satisfied for any transaction, effectively mitigating the Rekey-To vulnerability."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal17.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly checks that the 'close_remainder_to' field is set to 'Global.zero_address()' in all payment transactions (Gtxn[1] and Gtxn[4]), mitigating the vulnerability. Specifically, Gtxn[4] explicitly includes the check 'Gtxn[4].close_remainder_to() == Global.zero_address()', ensuring no funds can be drained via this field."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Rekey To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly implements checks for the 'rekey_to' field in all transactions, ensuring it is set to 'Global.zero_address()'. Each transaction in the group (txn0 to txn5) includes this validation, mitigating the risk of unauthorized account control transfer."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal18.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Arbitrary delete",
+                            "status": "not vulnerable",
+                            "description": "The contract does not include any logic for handling DeleteApplication transactions, thus the vulnerability cannot be triggered. The code focuses on validating a group of transactions with specific types and conditions, but does not address contract deletion."
+                        },
+                        {
+                            "vulnerability_name": "Arbitrary update",
+                            "status": "not vulnerable",
+                            "description": "The contract does not handle UpdateApplication calls, as evidenced by the absence of any transaction in the group that checks for Txn.on_completion() == OnComplete.UpdateApplication. Therefore, the precondition for the vulnerability is not satisfied, making the contract not vulnerable to arbitrary updates."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly checks that the 'close_remainder_to' field is set to 'Global.zero_address()' in the payment transaction at index 4 (Gtxn[4]), ensuring no funds can be drained from the account. This check is part of the transaction validation logic, making the contract not vulnerable to the 'Unchecked Close Remainder To' vulnerability."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The contract does not include any transactions that could trigger the Rekey-To vulnerability as it does not handle transactions where the 'rekey_to' field could be set to a non-zero address. All transactions in the group are strictly defined with specific types and fields, and none of them involve operations that would require checking the 'rekey_to' field. Therefore, the precondition for the vulnerability is not satisfied."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal19.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly checks that the 'close_remainder_to' field is set to 'Global.zero_address()' in all payment transactions (Gtxn[0] and Gtxn[1]), mitigating the vulnerability. Additionally, it includes checks for 'rekey_to' being zero address and validates other transaction fields, ensuring comprehensive security."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract does not include any asset transfer transactions that could trigger the 'Unchecked Asset Close To' vulnerability. The only asset transfer transaction (Gtxn[2]) does not involve the 'asset_close_to' field, and the contract enforces other security checks such as rekey_to being set to Global.zero_address(). Therefore, the vulnerability cannot be triggered in this context."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly implements fee checks for all transactions in the group. Specifically, it ensures that Txn.fee() <= max_fee for the main transaction, Gtxn[0].fee() + extra_fee <= max_fee for the first group transaction, and Gtxn[2].fee() <= Int(1000) for the second group transaction. These checks effectively mitigate the Unchecked Transaction Fee vulnerability by capping the fees at predefined maximum values."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal20.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly implements a fee check with 'Txn.fee() < tmpl_fee' in the 'split_core' condition, ensuring that the transaction fee does not exceed the predefined maximum. This mitigates the risk of attackers submitting transactions with abnormally high fees."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Rekey To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly implements the security check for the 'rekey_to' field by ensuring it is set to 'Global.zero_address()' in the 'split_core' condition. This check is part of the 'split_program' which is the main logic of the contract. Additionally, the contract validates other transaction fields and conditions, making it secure against the Rekey-To vulnerability."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Not Vulnerable",
+            "results": [
+                {
+                    "contract_id": "pyteal21.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly checks that the 'asset_close_to' field is set to 'Global.zero_address()' in both asset transfer transactions (Gtxn[0] and Gtxn[1]), ensuring that no remaining funds can be drained from the account. This mitigates the 'Unchecked Close Remainder To' vulnerability effectively."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly implements fee validation for both transactions in the group. Each transaction (Gtxn[0] and Gtxn[1]) includes a check to ensure the fee does not exceed the predefined maximum (tmpl_fee = Int(1000)). This effectively mitigates the risk of attackers submitting transactions with abnormally high fees, thus protecting the sender's funds."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal22.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract includes a check for the transaction fee (Txn.fee() < tmpl_fee) in the split_core condition, ensuring that the fee does not exceed the predefined maximum (tmpl_fee). This effectively mitigates the Unchecked Transaction Fee vulnerability by capping the fee at a safe level."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly checks that the 'close_remainder_to' field is set to 'Global.zero_address()' in the 'split_transfer' condition for payment transactions. Additionally, it includes a separate 'split_close' condition that properly manages the 'close_remainder_to' field when closing the account, ensuring no funds can be drained unexpectedly."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal23.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly checks that the 'close_remainder_to' field is set to 'Global.zero_address()' in the 'split_transfer' condition for payment transactions, which prevents the vulnerability. Additionally, the 'split_close' condition explicitly sets 'close_remainder_to' to 'tmpl_own' only after a timeout, which is a controlled and intended behavior."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "vulnerable",
+                            "description": "The contract does not include a check to cap the transaction fee, which could allow attackers to submit transactions with abnormally high fees, potentially draining funds from other users. The required security check to ensure all transactions have capped fees is missing."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal24.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly implements the required security check by ensuring that the 'close_remainder_to' field is set to 'Global.zero_address()' in all payment transactions, as evidenced by the line 'Txn.close_remainder_to() == Global.zero_address()'. This prevents the draining of remaining funds from a delegated account."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly implements a fee check with 'Txn.fee() <= Int(1000)', ensuring that the transaction fee does not exceed the specified limit. This mitigates the risk of attackers submitting transactions with abnormally high fees. Additionally, the contract includes checks for the transaction type, amount, receiver, close remainder to, and rekey to, providing comprehensive security measures."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal25.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Arbitrary update",
+                            "status": "vulnerable",
+                            "description": "The contract does not handle the UpdateApplication call, which means it does not explicitly restrict or disable updates. This omission allows attackers to potentially call UpdateApplication and replace the contract logic with malicious code. The contract should include checks to either restrict updates to the creator or fully disable updates to mitigate this vulnerability."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The provided PyTeal smart contract does not include any payment transactions (TxnType.Payment) or logic that could trigger the Unchecked Payment Receiver vulnerability. The contract focuses on access control and administrative functions without handling ALGO or ASA transfers, thus the vulnerability cannot be triggered."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Unchecked Rekey to",
+            "results": [
+                {
+                    "contract_id": "pyteal26.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Rekey To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly checks that the 'rekey_to' field is set to 'Global.zero_address()' in the asset transfer transaction (Gtxn[1]). The payment transaction (Gtxn[0]) does not require a 'rekey_to' check as it is not a field that can be set in a payment transaction type. Therefore, the contract is not vulnerable to the Unchecked Rekey To vulnerability."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly checks that the 'close_remainder_to' field is set to 'Global.zero_address()' in the payment transaction (Gtxn[0]), ensuring that no funds can be drained from the account through this vulnerability. Additionally, the contract validates the group size and includes checks for other transaction fields to prevent unauthorized actions."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal27.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly implements the required security check by ensuring that the 'asset_close_to' field is set to 'Global.zero_address()' in the asset transfer transaction. This prevents attackers from draining the user's asset holdings by setting 'asset_close_to' to their own address. The check is part of the 'txn_0_checks' which validates multiple fields of the transaction, including the type, receiver, amount, fee, and the 'asset_close_to' field."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "Not vulnerable: The contract implements a check for the transaction fee (Gtxn[0].fee() <= Int(1000)) in the txn_0_checks condition, ensuring that the fee is capped at 1000 microALGOs. This prevents the exploitation of the contract through transactions with abnormally high fees."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal28.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly checks that the 'close_remainder_to' field is set to 'Global.zero_address()' in the payment transaction (Gtxn[1]), ensuring no funds can be drained from the account. This is evidenced by the line 'Gtxn[1].close_remainder_to()==Global.zero_address()' in the 'secondtx' condition."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Rekey To",
+                            "status": "vulnerable",
+                            "description": "Vulnerable: The contract does not validate the 'rekey_to' field for transactions at index 1 and 2 in the group, only for the transaction at index 0. This oversight could allow attackers to rekey the accounts involved in these transactions to an address they control, leading to potential loss of funds or assets."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal29.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly validates the AssetReceiver field in the Asset Transfer Transaction (thirdTxn) by ensuring it matches a specific whitelisted address (Addr('VW7CJ6PHCBPRKHBHEXUASUWZJR3EQK6GOI4NQR6J4PW7W3S6WQKUAVK6FQ')). Additionally, the contract performs comprehensive checks on all transactions in the group, including type validation, sender verification, and fee constraints, ensuring no transaction can bypass the expected checks."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly validates the receiver address in payment transactions (TxnType.Payment) for both the second and fourth transactions in the group. Specifically, Gtxn[1].receiver() is checked against a whitelisted address (WSIZD6XBDCMJXVWAVPIWNONITVXCF6QNHY5B3PYIMDDQLIVTWHOJ65IX4Y) and Gtxn[3].receiver() is checked against another whitelisted address (BSLDXGZI7EO6SBCB3IVZYULXWJIRTVF5COIVUNO3I3DGUH6S7YYMWH7W4A). Additionally, the contract ensures no rekeying or close remainder to unauthorized addresses by setting rekey_to() and close_remainder_to() to Global.zero_address()."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract does not include any asset transfer transactions that could trigger the 'Unchecked Asset Close To' vulnerability. The third transaction in the group is an AssetTransfer, but it does not involve the 'asset_close_to' field, which is the focus of this vulnerability. Therefore, the precondition for the vulnerability is not met, and the contract is not vulnerable to this specific issue."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly implements fee checks for all transactions in the group. Specifically, Gtxn[0].fee() < Int(2000), Gtxn[2].fee() <= Int(1500), and Gtxn[3].fee() <= Int(1000) ensure that transaction fees are capped, mitigating the Unchecked Transaction Fee vulnerability. The contract also includes additional security checks such as rekey_to and close_remainder_to being set to Global.zero_address(), further enhancing its security."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal30.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly validates the receiver address in all payment transactions (TxnType.Payment) within the group. Specifically, transactions 1, 3, and 4 explicitly check that the receiver is a predefined address, ensuring payments only go to whitelisted addresses. This mitigates the Unchecked Payment Receiver vulnerability by enforcing strict receiver validation."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly validates the AssetReceiver field in Asset Transfer Transactions (ASA transfers) for transactions at index 2 and 5, ensuring that asset transfers only go to whitelisted addresses 'MYE3YDQ6WUBO6RQ5XYEWJQCOLIZNH35YUPPWMHMWBPCYN5G6PMVAKHNQTY' and 'BOD2AEH7VHREKEGAI2BMDZDE77257L47M4IT35YOOJB3ZB4B7BJGGV7J3Y' respectively. This prevents unauthorized redirection of tokens."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly implements checks for the 'rekey_to' field in all relevant transactions (txn_1_checks, txn_2_checks, txn_5_checks), ensuring it is set to 'Global.zero_address()'. This prevents the vulnerability by not allowing any transaction in the group to change the account's authorization to an attacker's address."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the 'asset_close_to' field in asset transfer transactions (Gtxn[2] and Gtxn[5]), which could allow attackers to drain remaining assets from a delegated account. The required security check to ensure 'asset_close_to' is set to 'Global.zero_address()' is missing."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Unchecked Transaction Fee",
+            "results": [
+                {
+                    "contract_id": "pyteal31.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly implements checks for the payment receiver in the basic_checks condition, ensuring that payments only go to the specified address (2YINOKV3CN6PLHYXTLECTB5V6YQWP2SXGGDJUY2CDXLVHB3GOHG4WKEVCU). Additionally, it includes comprehensive checks for rekey_to and close_remainder_to fields, and validates the transaction amount and group index, effectively mitigating the Unchecked Payment Receiver vulnerability."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly validates the AssetReceiver field in Asset Transfer Transactions (ASA transfers) by ensuring the asset_receiver is a whitelisted address (P3YBXEZ6I2XSCQVRD2ECOJ544W4K6B6JYKPE3R2TYHYLQKIH56N6MPE2HA). Additionally, it checks for other critical fields such as asset_amount, fee, and rekey_to to ensure no unauthorized redirection of tokens."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The smart contract correctly implements checks for the 'rekey_to' field in all transactions within the group, ensuring it is set to 'Global.zero_address()'. This includes the basic transaction checks, other transaction checks, and extra transaction checks, effectively mitigating the Rekey-To vulnerability."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly checks that the 'close_remainder_to' field is set to 'Global.zero_address()' in all payment transactions, including those in the group (Gtxn[1]). This ensures that no funds can be drained from the account via the 'close_remainder_to' field. The checks are implemented in both the basic_checks and other_txn_checks conditions, covering all relevant transactions."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal32.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly checks that the 'asset_close_to' field is set to 'Global.zero_address()' in the asset transfer transaction (Gtxn[2]), ensuring that no assets can be drained to an unauthorized address. This check is part of the 'txn3_conditions' which is required for the transaction to be valid."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly checks that the 'close_remainder_to' field is set to 'Global.zero_address()' in all payment transactions (Gtxn[0], Gtxn[1], and Gtxn[3]), mitigating the vulnerability. Additionally, it validates other critical fields such as 'rekey_to' and 'fee', ensuring comprehensive security measures are in place."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal33.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "vulnerable",
+                            "description": "The contract is vulnerable because it does not enforce a fee check in all transactions within the group. Specifically, txn2 lacks the Assert(Txn.fee() <= fee_limit) check, which could allow a malicious user to submit a transaction with an abnormally high fee, potentially draining funds from other users. The checks for close_remainder_to, asset_close_to, and rekey_to are correctly implemented across all transactions, but the fee validation is missing in txn2."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly mitigates the 'Unchecked Asset Close To' vulnerability by ensuring that the 'asset_close_to' field is set to 'Global.zero_address()' in all transactions (txn1, txn2, txn3) within the group. This prevents attackers from draining assets by setting 'asset_close_to' to their own address."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal34.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly implements checks for the 'asset_close_to' field in asset transfer transactions, ensuring it is set to 'Global.zero_address()'. This is verified in the 'validate_asset_transfer' and 'check_opt_in' functions, which are part of the approval program. Additionally, the contract checks for 'rekey_to' being set to 'Global.zero_address()' and validates other transaction fields, making it secure against the described vulnerability."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly implements fee validation checks for all transactions. Specifically, it ensures that the fee for each transaction does not exceed the predefined limit (2000 microALGO) through conditions like 'Gtxn[idx].fee() <= fee_limit' in the 'check_payment', 'validate_asset_transfer', and 'check_opt_in' functions. This effectively mitigates the risk of attackers exploiting the contract with abnormally high fees."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal35.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract implements strict checks for the 'close_remainder_to' field in all payment transactions, ensuring it is set to 'Global.zero_address()'. Additionally, it checks for 'asset_close_to' and 'rekey_to' fields, and enforces a fee limit. The contract is not vulnerable as it correctly mitigates the 'Unchecked Close Remainder To' vulnerability by validating all relevant transaction fields."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract implements proper checks for the 'asset_close_to' field in all transactions, ensuring it is set to 'Global.zero_address()'. Specifically, txn1 and txn3 enforce strict validation of 'asset_close_to' among other security checks, while txn2 includes it in a logical OR condition that still prevents unauthorized asset transfers. This comprehensive approach effectively mitigates the vulnerability."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract implements fee validation checks in all transactions (txn1, txn2, txn3) ensuring that the transaction fee does not exceed the set limit (1000 microALGO). Additionally, it includes checks for close_remainder_to, asset_close_to, and rekey_to to prevent other common vulnerabilities. The use of Assert and And/Or conditions ensures that all security checks are correctly enforced."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Unchecked Asset Receiver",
+            "results": [
+                {
+                    "contract_id": "pyteal36.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the asset_receiver field in the Asset Transfer Transaction, allowing tokens to be sent to any address specified in Txn.accounts[1]. This could lead to unauthorized redirection of tokens. The required security check to ensure asset transfers only go to whitelisted addresses is missing."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract does not handle TxnType.Payment transactions directly, thus the precondition for the Unchecked Payment Receiver vulnerability is not met. The contract's no-op handler specifically deals with asset transfers (TxnType.AssetTransfer) and includes checks for the asset receiver, amount, and asset ID, ensuring that only authorized operations are performed. Since the contract does not process payment transactions, the vulnerability cannot be triggered."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal37.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the AssetReceiver field in Asset Transfer Transactions (ASA transfers) against a whitelisted address. This allows the redirection of tokens to unauthorized addresses, as seen in the handle_transfer function where the asset_receiver is set to Txn.accounts[1] without any validation against a trusted address."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The contract does not include any logic that could trigger the Rekey-To vulnerability as it does not process transactions that could potentially have the 'rekey_to' field set. The contract focuses on asset transfers and application calls without handling account rekeying scenarios. Therefore, the precondition for the vulnerability is not satisfied."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract does not include any payment transactions (TxnType.Payment) that would require validation of the receiver address. The only transfer-related operation is an asset transfer (TxnType.AssetTransfer) in the 'handle_transfer' function, which correctly specifies the asset receiver as 'Txn.accounts[1]' without any direct payment to an address. Therefore, the precondition for the vulnerability is not met, and the contract is not vulnerable to the Unchecked Payment Receiver issue."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal38.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The contract does not include any transaction authorization logic that would require checking the 'rekey_to' field. Since the contract does not handle payments or asset transfers directly (it only processes application calls and asset transfers in a group transaction context), the precondition for the vulnerability is not met. The contract's logic focuses on asset management within the application context, not on authorizing transactions that could be rekeyed."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract does not handle any payment transactions directly, and the asset transfer logic does not involve fee validation as it is not required for the contract's functionality. The contract primarily manages asset transfers and application calls without processing transaction fees, making it not vulnerable to the Unchecked Transaction Fee vulnerability."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the asset_receiver field in the Asset Transfer Transaction (Gtxn[0]), allowing potential redirection of tokens to unauthorized addresses. The required security check to ensure asset transfers only go to whitelisted addresses is missing."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract does not include any payment transactions (TxnType.Payment) that would require validation of the receiver address. The operations are focused on asset transfers and application calls, with checks on asset amounts and sender authorization, but no payment transactions are processed that could be vulnerable to the Unchecked Payment Receiver issue."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal39.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The provided PyTeal smart contract does not include any asset transfer transactions that could trigger the 'Unchecked Asset Close To' vulnerability. The contract focuses on application calls and asset transfers within a group transaction context but does not handle or authorize standalone asset transfer transactions where the 'asset_close_to' field would be relevant. Therefore, the precondition for the vulnerability is not met, making the contract not vulnerable to this specific issue."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The provided PyTeal smart contract does not include any payment transactions that could trigger the 'close_remainder_to' vulnerability. The contract primarily handles asset transfers and application calls, with no logic that would authorize payment transactions where 'close_remainder_to' could be exploited. Therefore, the precondition for the vulnerability is not met, making the contract not vulnerable to this specific issue."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the asset_receiver field in Asset Transfer Transactions (ASA transfers) within the on_exchange_1, on_exchange_2, and on_exchange_3 functions. This omission allows for the potential redirection of tokens to unauthorized addresses, as there is no check against a whitelisted or trusted address for the asset receiver."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The provided PyTeal smart contract does not include any payment transactions (TxnType.Payment) that would require validation of the receiver address. The contract primarily handles asset transfers and application calls, with checks on asset amounts and types, but does not process direct ALGO payments where the Unchecked Payment Receiver vulnerability could be exploited. Therefore, the precondition for the vulnerability is not met, making the contract not vulnerable to this specific issue."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal40.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The contract does not include any logic that could trigger the Rekey-To vulnerability as it does not process any payment or asset transfer transactions directly that would require checking the 'rekey_to' field. All asset transfers are part of grouped transactions where the contract's role is to validate the conditions of the exchange, not to authorize the transfers themselves. Therefore, the precondition for the vulnerability is not met."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "vulnerable",
+                            "description": "The contract does not implement any checks on the transaction fees for any of the transactions in the group, including AssetTransfer and ApplicationCall types. This omission could allow attackers to submit transactions with abnormally high fees, potentially draining funds from other users. The contract should include checks like Gtxn[i].fee() <= Int(1000) for each transaction to mitigate this vulnerability."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the asset_receiver field in Asset Transfer Transactions (ASA transfers) within the on_exchange_1, on_exchange_2, and on_exchange_3 functions. This omission allows attackers to redirect tokens to unauthorized addresses, as there is no check to ensure asset transfers only go to whitelisted addresses."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract does not include any asset transfer transactions that could trigger the 'Unchecked Asset Close To' vulnerability. The precondition for the vulnerability is not met as the contract does not authorize asset transfer transactions on behalf of user accounts. Therefore, the contract is not vulnerable to this specific issue."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Unchecked Payment Receiver",
+            "results": [
+                {
+                    "contract_id": "pyteal41.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the receiver address in payment transactions, allowing funds to be sent to unauthorized addresses. The handle_payment function checks for the transaction type and amount but fails to verify the receiver against a whitelisted address, making it susceptible to the Unchecked Payment Receiver vulnerability."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "not vulnerable",
+                            "description": "The provided PyTeal smart contract does not handle Asset Transfer Transactions (ASA transfers) at all, focusing solely on Payment transactions. Since the vulnerability precondition (TxnType.AssetTransfer) is not present in the contract, the Unchecked Asset Receiver vulnerability cannot be triggered. The contract includes checks for Payment transactions but does not address ASA transfers, making it irrelevant to the specified vulnerability."
+                        },
+                        {
+                            "vulnerability_name": "Arbitrary update",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly mitigates the arbitrary update vulnerability by implementing a check in the handle_updateapp function that ensures only the creator can update the application. The check 'Assert(Txn.sender() == App.globalGet(creator_key))' validates that the sender of the UpdateApplication transaction is the creator, thus restricting updates to authorized parties only."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal42.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Arbitrary delete",
+                            "status": "not vulnerable",
+                            "description": "The contract does not include any logic to handle the DeleteApplication transaction, which means the vulnerability cannot be triggered as there is no way to delete the contract through its operations. The contract only handles creation, funding, and withdrawal operations, with no provision for deletion."
+                        },
+                        {
+                            "vulnerability_name": "Arbitrary update",
+                            "status": "not vulnerable",
+                            "description": "The contract does not handle the UpdateApplication call, which means there is no functionality to update the application logic after deployment. Therefore, the precondition for the vulnerability is not satisfied, making the contract not vulnerable to arbitrary updates."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the receiver address in the payment transaction during the withdrawal process. Specifically, in the 'handle_withdraw' function, the receiver is set to 'Gtxn[1].accounts[1]' without any checks to ensure it is a whitelisted or authorized address. This allows attackers to redirect funds to unauthorized addresses."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal43.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The contract does not include any logic that could trigger the Rekey-To vulnerability as it does not process transactions that could have the 'rekey_to' field set. All operations are either initializing the contract, contributing funds, setting pension amounts, handling deletions, or withdrawing funds, none of which involve rekeying operations. Therefore, the precondition for the vulnerability is not satisfied."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "vulnerable",
+                            "description": "The contract does not implement any checks on the transaction fee, making it susceptible to the Unchecked Transaction Fee vulnerability. Attackers could submit transactions with high fees, potentially draining funds from other users. The contract handles payments and asset transfers but lacks fee validation, such as ensuring Gtxn[i].fee() <= Int(1000), which is crucial for preventing fee-related exploits."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the receiver address in the payment transaction within the 'withdraw' function. Specifically, the 'InnerTxnBuilder.SetField(TxnField.receiver, Gtxn[1].receiver())' line sets the receiver to the address provided in the second transaction of the group without any validation against a whitelist or trusted addresses. This allows an attacker to specify any address as the receiver, potentially redirecting funds to unauthorized addresses."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract does not handle Asset Transfer Transactions (ASA transfers) directly, as it primarily deals with payments and application calls. The withdraw function uses a payment transaction to send funds, but it validates the sender and the amount against the global state, ensuring only authorized operations. Since there are no ASA transfer operations in the contract, the vulnerability cannot be triggered."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal44.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Arbitrary update",
+                            "status": "vulnerable",
+                            "description": "The contract is vulnerable because it handles the UpdateApplication transaction without verifying the sender's identity against the creator's address. The set_recipient function allows any sender to update the recipient if they are the admin, but there is no check to ensure that the admin is the original creator or to disable updates entirely. This could allow an attacker to update the application logic if they gain admin privileges."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the recipient address in payment transactions, specifically in the 'pagamento' function. Although it checks the admin's authority and the balance sufficiency, it fails to ensure that the payment is directed to a whitelisted or intended recipient address. This oversight could allow an attacker to redirect funds to an unauthorized address."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal45.json",
+                    "detected_vulns": [
+                        {
+                            "vulnerability_name": "Arbitrary delete",
+                            "status": "not vulnerable",
+                            "description": "The contract does not include any logic to handle the DeleteApplication transaction, which means the vulnerability cannot be triggered as there is no way to delete the contract through its logic. The contract only handles NoOp and OptIn transactions, and initial setup when the application ID is 0."
+                        },
+                        {
+                            "vulnerability_name": "Arbitrary update",
+                            "status": "not vulnerable",
+                            "description": "The contract does not handle the UpdateApplication call, which means the vulnerability cannot be triggered as there is no logic to update the application. The contract only includes setup, add_funds, and distribute_funds operations, with no provision for updating the application logic."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the receiver address in the distribute_funds function, which processes payment transactions. This allows the owner to send funds to any address, including unauthorized ones, as there is no check against a whitelist or specific trusted address. The vulnerability is present in the distribute_funds function where only the sender's authorization and the transaction type are checked, but not the receiver's address."
+                        },
+                        {
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "not vulnerable",
+                            "description": "The provided PyTeal smart contract does not include any Asset Transfer Transactions (ASA transfers) logic, which is the precondition for the Unchecked Asset Receiver vulnerability. The contract focuses on payment transactions and fund management without involving asset transfers, thus the vulnerability cannot be triggered."
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

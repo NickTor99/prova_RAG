@@ -1,0 +1,59 @@
+# Bytecode e file temporanei
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+
+# File temporanei del sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# File di configurazione di PyCharm / IntelliJ
+.idea/
+*.iml
+
+# Log
+*.log
+
+# Database e file temporanei locali
+*.sqlite3
+*.db
+
+# Cache di pip
+pip-wheel-metadata/
+*.bak
+
+# File temporanei di test
+.pytest_cache/
+.tox/
+coverage.*
+htmlcov/
+.cache/
+
+# File Jupyter Notebook
+.ipynb_checkpoints/
+
+# Config GitHub Codespaces / VS Code (se usati)
+.vscode/
+.devcontainer/
+*.code-workspace
+
+# Requirements
+*.lock
+
+# Evita di inviare credenziali o chiavi
+*.pem
+*.key
+.env
+.env.*

@@ -1,0 +1,1086 @@
+{
+    "type": "test with additional information",
+    "date": "13/05/2025-18:31",
+    "results": [
+        {
+            "name": "Arbitrary delete",
+            "results": [
+                {
+                    "contract_id": "pyteal1.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The contract is a Stateful Smart Contract (Application) as it uses OnCompletion handlers (DeleteApplication, OptIn) and includes logging operations. The vulnerability to analyze is 'Arbitrary delete', which checks if the contract allows unrestricted deletion. The contract handles the DeleteApplication call but does not restrict deletion to the creator or disable it entirely. Instead, it simply logs the deletion and returns success (Int(1)), which means any user can delete the contract.",
+                            "vulnerability_name": "arbitrary_delete",
+                            "status": "vulnerable",
+                            "description": "The contract does not restrict deletion to the creator or disable it. The DeleteApplication handler allows any user to delete the contract, making it vulnerable to arbitrary deletion."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it uses OnComplete handlers (DeleteApplication, OptIn) and does not use any App.* operations but is part of an application lifecycle. The vulnerability to analyze is 'Arbitrary update', which checks if the contract allows unrestricted updates via the UpdateApplication transaction. The contract does not handle the OnComplete.UpdateApplication case in its Cond block, meaning any attempt to update the application will fail by default, as the contract does not explicitly allow it. This effectively prevents unauthorized updates.",
+                            "vulnerability_name": "arbitrary_update",
+                            "status": "not vulnerable",
+                            "description": "The contract does not handle the UpdateApplication transaction, making it impossible to update the contract logic. This default behavior prevents any unauthorized updates, thus mitigating the 'arbitrary update' vulnerability."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal2.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The contract is a Stateful Smart Contract (Application) as it uses App.* operations and handles lifecycle events via OnCompletion handlers. The vulnerability to analyze is 'Arbitrary delete', which checks if the contract allows unrestricted deletion. The contract handles the DeleteApplication call in the 'is_delete_application' condition, but it does not restrict deletion to the creator or disable deletion entirely. Instead, it simply logs the deletion and returns success (Int(1)), which means any user can delete the contract. The required security check to restrict deletion to the creator or disable it is missing.",
+                            "vulnerability_name": "arbitrary_delete",
+                            "status": "vulnerable",
+                            "description": "The contract allows any user to delete it by handling the DeleteApplication call without restricting deletion to the creator or disabling it. This makes the contract vulnerable to arbitrary deletion, which can lead to permanent loss of state and funds."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it uses App.* operations (App.globalPut) and handles lifecycle events via OnCompletion handlers (OptIn, UpdateApplication, CloseOut, DeleteApplication). The vulnerability to analyze is 'Arbitrary update', which checks if the contract allows unrestricted updates. The contract handles the UpdateApplication event in the Cond block, where it asserts that the sender is the zero address (Global.zero_address()). This effectively disables updates, as no sender can be the zero address. Therefore, the contract is not vulnerable to arbitrary updates.",
+                            "vulnerability_name": "arbitrary_update",
+                            "status": "not vulnerable",
+                            "description": "The contract disables updates by requiring the sender to be the zero address (Global.zero_address()) in the UpdateApplication handler, making it impossible for any party to update the contract."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal3.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The contract is a Stateful Smart Contract (Application) as it uses App.globalPut and App.globalGet operations and handles lifecycle events via OnCompletion handlers. The vulnerability being analyzed is 'Arbitrary delete', which checks if the contract allows unrestricted deletion. The contract handles the DeleteApplication call in the 'delete_contract' branch, which simply approves the deletion without any checks on the sender's identity or other restrictions. This means any user can delete the contract, leading to potential loss of state and funds.",
+                            "vulnerability_name": "arbitrary_delete",
+                            "status": "vulnerable",
+                            "description": "The contract does not restrict deletion to the creator or disable deletion entirely. The 'delete_contract' branch unconditionally approves the DeleteApplication call, making the contract vulnerable to arbitrary deletion by any user."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it uses App.globalPut and App.globalGet operations and handles lifecycle events via OnCompletion handlers. The vulnerability to analyze is 'Unchecked Rekey to', which applies to stateless smart contracts (LogicSig or Contract Account) that authorize asset transfer transactions or payment transactions on behalf of user accounts. Since this is a stateful smart contract, the vulnerability does not apply. Additionally, the contract does not handle any payment or asset transfer transactions that would require checking the RekeyTo field.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful smart contract (Application) and does not handle payment or asset transfer transactions that would require checking the RekeyTo field. Therefore, the 'Unchecked Rekey to' vulnerability does not apply."
+                        },
+                        {
+                            "reasoning": "1. **Contract Type Classification**: The provided PyTeal code is a Stateful Smart Contract (Application) because it uses App.globalPut and App.globalGet operations, and it handles lifecycle events such as OnComplete.NoOp and OnComplete.DeleteApplication.\n\n2. **Vulnerability Assessment**: The vulnerability to analyze is 'Arbitrary update'. The contract does not explicitly handle the OnComplete.UpdateApplication event. By default, if the contract does not handle this event, any attempt to update the application will fail, effectively preventing unauthorized updates. However, the contract does handle OnComplete.DeleteApplication with an unconditional Approve(), which could be a concern if not properly restricted.\n\n3. **Required Security Check**: The contract does not include any checks for the OnComplete.UpdateApplication event, which means updates are implicitly disabled. This is a secure default behavior. However, the contract should also ensure that the DeleteApplication event is properly restricted to the creator or admin, which it currently does not do (it unconditionally approves deletion).",
+                            "vulnerability_name": "arbitrary_update",
+                            "status": "not vulnerable",
+                            "description": "The contract does not handle OnComplete.UpdateApplication, making it impossible to update the contract arbitrarily. However, it unconditionally approves OnComplete.DeleteApplication, which could be a separate security concern."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal4.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (application) as it uses App.globalPut and handles OnCompletion events like NoOp and DeleteApplication. The vulnerability to analyze is 'Arbitrary delete', which checks if the contract allows unrestricted deletion. The contract handles the DeleteApplication event but does not restrict deletion to the creator or disable it entirely. Instead, it unconditionally approves the deletion with 'delete_contract = Approve()'. This means any user can delete the contract, leading to potential loss of state and funds.",
+                            "vulnerability_name": "arbitrary_delete",
+                            "status": "vulnerable",
+                            "description": "The contract unconditionally approves the DeleteApplication transaction without any checks on the sender's identity (e.g., creator address). This allows any user to delete the contract, making it vulnerable to arbitrary deletion."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (application) as it uses App.globalPut and handles lifecycle events like OnComplete.NoOp and OnComplete.DeleteApplication. The vulnerability to analyze is 'Arbitrary update', which checks if the contract allows unauthorized updates. The contract does not explicitly handle the OnComplete.UpdateApplication case in its Cond statement. By default, if an UpdateApplication transaction is attempted, it will not match any of the conditions in the Cond statement and will result in a rejection, effectively preventing unauthorized updates. Therefore, the contract is not vulnerable to arbitrary updates.",
+                            "vulnerability_name": "arbitrary_update",
+                            "status": "not vulnerable",
+                            "description": "The contract does not handle OnComplete.UpdateApplication, so any attempt to update the contract will fail by default, preventing unauthorized updates."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it uses App.globalPut and handles lifecycle events via OnCompletion handlers (NoOp, DeleteApplication). The contract does not handle any payment transactions (TxnType.Payment) within its logic. The vulnerability 'Unchecked Payment Receiver' applies only to payment transactions, which are not present in this contract. Therefore, the contract is not vulnerable to this specific issue.",
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract does not process any payment transactions, hence there is no need to validate payment receivers. The vulnerability is not applicable as the contract does not handle the type of transactions where this vulnerability could occur."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal5.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The contract is a Stateful Smart Contract (Application) as it uses App.* operations and handles lifecycle events via OnCompletion handlers. The vulnerability to analyze is 'Arbitrary delete', which checks if the contract allows unrestricted deletion. The contract handles the DeleteApplication call in the approval_program function with the condition [Txn.on_completion() == OnComplete.DeleteApplication, Return(Int(1))]. This means that any sender can delete the contract without any restrictions, as there is no check to verify if the sender is the creator or if deletion is disabled. The required security check to restrict deletion to the creator or disable it is missing.",
+                            "vulnerability_name": "arbitrary_delete",
+                            "status": "vulnerable",
+                            "description": "The contract allows any sender to delete it without verifying if the sender is the creator or if deletion is disabled. This makes the contract vulnerable to arbitrary deletion, which can lead to permanent loss of state and funds."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as evidenced by the use of App.* operations (App.globalPut, App.globalGet, App.localGetEx, App.localPut) and the handling of lifecycle events via OnCompletion handlers (DeleteApplication, UpdateApplication, CloseOut, OptIn). The vulnerability being analyzed is 'Unchecked Rekey to', which applies to stateless smart contracts (LogicSig or Contract Account) that authorize asset transfer or payment transactions. Since this is a stateful smart contract, the vulnerability does not apply. The contract does not handle any payment or asset transfer transactions directly, and thus does not need to check the RekeyTo field.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful smart contract (Application) and does not handle payment or asset transfer transactions directly. The 'Unchecked Rekey to' vulnerability applies only to stateless smart contracts, making this contract not vulnerable to this specific issue."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it uses App.* operations and defines OnCompletion handlers. The vulnerability to analyze is 'Unchecked Asset Receiver', which applies to Asset Transfer Transactions (ASA transfers). The contract does not handle any asset transfer transactions directly; it focuses on voting and registration functionalities. There are no checks for asset receivers in the code, but since the contract does not involve any asset transfers, the vulnerability is not applicable.",
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract does not handle any asset transfer transactions, so the 'Unchecked Asset Receiver' vulnerability is not applicable. The contract's functionality is centered around voting and registration, with no interaction with ASA transfers."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses App.* operations and handles lifecycle events via OnCompletion handlers. The vulnerability to analyze is 'Arbitrary update', which checks if the contract allows unrestricted updates. The contract includes a handler for OnComplete.UpdateApplication, which returns is_creator, where is_creator is defined as Txn.sender() == App.globalGet(Bytes('Creator')). This ensures that only the creator of the contract can update it, thus preventing unauthorized updates.",
+                            "vulnerability_name": "arbitrary_update",
+                            "status": "not vulnerable",
+                            "description": "The contract includes a security check that restricts updates to the creator by verifying Txn.sender() == App.globalGet(Bytes('Creator')). This prevents unauthorized updates, making the contract not vulnerable to arbitrary update attacks."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Arbitrary update",
+            "results": [
+                {
+                    "contract_id": "pyteal10.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it uses App.globalPut and App.globalGet operations and handles lifecycle events via OnCompletion handlers (NoOp, UpdateApplication). The vulnerability to analyze is 'Arbitrary update', which applies to contracts that allow updates via the UpdateApplication handler. The contract does handle OnComplete.UpdateApplication, but it does not restrict updates to the creator or an admin. Instead, it allows any sender to update the application by setting a global variable with arbitrary values from the transaction arguments. This lack of restriction makes the contract vulnerable to arbitrary updates.",
+                            "vulnerability_name": "arbitrary_update",
+                            "status": "vulnerable",
+                            "description": "The contract handles OnComplete.UpdateApplication but does not restrict updates to the creator or an admin. It allows any sender to update the application by setting a global variable with arbitrary values from the transaction arguments, making it vulnerable to arbitrary updates."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (application) as evidenced by the use of App.globalPut, App.globalGet, and handling of OnCompletion events like NoOp and UpdateApplication. The vulnerability 'Unchecked Close Remainder To' is specific to stateless smart contracts (logic signatures) that authorize payment transactions. Since this contract is stateful and does not involve logic signatures or direct authorization of payment transactions, the vulnerability does not apply.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful application and does not authorize payment transactions directly, making it irrelevant to the 'Unchecked Close Remainder To' vulnerability which only applies to stateless smart contracts."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it uses App.globalPut and App.globalGet operations and handles lifecycle events via OnCompletion handlers. The vulnerability to analyze is 'Unchecked Payment Receiver', which applies to payment transactions. In the contract, there is a check for the receiver of the payment transaction (Gtxn[0].receiver() == Global.current_application_address()), ensuring that the payment is only accepted if the receiver is the contract's own address. This check prevents unauthorized redirection of funds to other addresses. Therefore, the contract is not vulnerable to the 'Unchecked Payment Receiver' vulnerability.",
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract properly validates the receiver address in payment transactions by ensuring that the receiver is the contract's own address (Global.current_application_address()). This check prevents unauthorized redirection of funds, making the contract not vulnerable to the 'Unchecked Payment Receiver' vulnerability."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal6.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as evidenced by the use of App.globalPut, App.globalGet, and handling of OnCompletion events such as NoOp, UpdateApplication, and DeleteApplication. The vulnerability 'Unchecked Close Remainder To' is specific to stateless smart contracts (LogicSig or Contract Account) that authorize payment transactions without proper checks on the close_remainder_to field. Since this is a stateful application and not a stateless contract, the vulnerability does not apply. The contract does not handle payment transactions directly but rather orchestrates a group of transactions where payment transactions are part of the group but not validated within the contract itself.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful application and does not directly authorize payment transactions, making it not vulnerable to the 'Unchecked Close Remainder To' vulnerability which is specific to stateless contracts."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses App.* operations (App.globalPut, App.globalGet) and defines and handles lifecycle events via OnCompletion handlers (NoOp, UpdateApplication, DeleteApplication). The vulnerability to analyze is 'Unchecked Rekey to', which applies to both stateless and stateful smart contracts. The contract does not explicitly validate the RekeyTo field in any of the transactions it processes. Specifically, in the handle_operation sequence, it checks multiple transaction types (Payment, ApplicationCall, Payment) but does not verify that the RekeyTo field is set to Global.zero_address() for any of these transactions. This omission means that an attacker could potentially include a transaction with a malicious RekeyTo field, leading to unauthorized account control.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the RekeyTo field in transactions, making it vulnerable to unauthorized account control. The required security check (Txn.rekey_to() == Global.zero_address() or Gtxn[i].rekey_to() == Global.zero_address()) is missing in all transaction validations."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses App.globalPut and App.globalGet operations and handles lifecycle events like UpdateApplication and DeleteApplication. The vulnerability to analyze is 'Arbitrary update', which checks if the contract allows unauthorized updates. The contract has a specific handler for UpdateApplication (update_admin), but it does not properly restrict updates to the creator or admin. Instead, it allows any sender to update the admin key without verifying if the sender is the current admin or creator. This means an attacker could call UpdateApplication and change the admin key to their own address, effectively taking control of the contract.",
+                            "vulnerability_name": "arbitrary_update",
+                            "status": "vulnerable",
+                            "description": "The contract does not restrict updates to the creator or admin. The update_admin handler allows any sender to update the admin key, making it vulnerable to unauthorized updates. A proper check like Txn.sender() == App.globalGet(admin_key) or Txn.sender() == Global.creator_address() is missing."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a Stateful Smart Contract (Application) as it uses App.globalPut and App.globalGet operations, and defines OnCompletion handlers (NoOp, UpdateApplication, DeleteApplication). The vulnerability to analyze is 'Unchecked Payment Receiver', which applies to payment transactions (TxnType.Payment). The contract includes a group of transactions where Gtxn[0] and Gtxn[2] are of type TxnType.Payment. However, the contract does not validate the receiver address for these payment transactions. Specifically, there is no check to ensure that Gtxn[0].receiver() or Gtxn[2].receiver() is a whitelisted or authorized address. This missing validation makes the contract vulnerable to the 'Unchecked Payment Receiver' vulnerability, where an attacker could redirect funds to an unauthorized address.",
+                            "vulnerability_name": "Unchecked_Payment_Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the receiver address in payment transactions (Gtxn[0] and Gtxn[2]), allowing attackers to redirect funds to unauthorized addresses. The required security check (e.g., Txn.receiver() == valid_receiver) is missing."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal7.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code implements a Stateful Smart Contract (Application) as it uses App.globalPut and App.globalGet operations, and defines handlers for lifecycle events like OnComplete.NoOp, OnComplete.UpdateApplication, and OnComplete.DeleteApplication. The vulnerability to analyze is 'Unchecked Payment Receiver', which applies to payment transactions (TxnType.Payment). The contract includes a group of three transactions where the first (Gtxn[0]) and third (Gtxn[2]) are payment transactions. However, the contract does not validate the receiver address for these payment transactions. Specifically, there is no check like Txn.receiver() == valid_receiver or Gtxn[i].receiver() == valid_receiver in the handle_operation sequence. This missing validation means that the payment transactions can send funds to any address, making the contract vulnerable to the 'Unchecked Payment Receiver' vulnerability.",
+                            "vulnerability_name": "Unchecked_Payment_Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the receiver address in payment transactions (Gtxn[0] and Gtxn[2]), allowing funds to be sent to unauthorized addresses. This missing validation makes the contract vulnerable to the 'Unchecked Payment Receiver' vulnerability."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses App.* operations (App.globalPut, App.globalGet) and defines and handles lifecycle events via OnCompletion handlers (NoOp, UpdateApplication, DeleteApplication). The vulnerability to analyze is 'Unchecked Rekey to', which applies to both stateless and stateful smart contracts. The contract does not explicitly validate the RekeyTo field in any of the transactions it processes. Specifically, it does not check that Txn.rekey_to() or Gtxn[i].rekey_to() is set to Global.zero_address() in any of the transaction handling sequences (initialize_application, handle_operation, update_admin, delete_application). This omission means that an attacker could potentially rekey the account to their own address, gaining control over it.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the RekeyTo field in transactions, allowing potential attackers to rekey the account to their own address. This is a critical security risk as it could lead to complete loss of control over the account. The contract should explicitly check that Txn.rekey_to() and Gtxn[i].rekey_to() are set to Global.zero_address() in all transaction handling sequences."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a Stateful Smart Contract (Application) as it uses App.* operations and defines OnCompletion handlers. The vulnerability to analyze is 'Arbitrary update', which checks if the contract allows unrestricted updates. The contract handles the UpdateApplication call in the 'update_admin' sequence. However, the check for the sender being the admin is missing in the 'update_admin' sequence. Instead, it only checks the number of application arguments and the OnCompletion type. This means any sender can call UpdateApplication and change the admin key, making the contract vulnerable to arbitrary updates.",
+                            "vulnerability_name": "arbitrary_update",
+                            "status": "vulnerable",
+                            "description": "The contract does not restrict the UpdateApplication call to the admin or creator, allowing any sender to update the admin key. This missing check makes the contract vulnerable to arbitrary updates, where an attacker can replace the logic with malicious code."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal8.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (application) as it handles OnCompletion events, specifically UpdateApplication. The contract checks for the UpdateApplication event but does not restrict updates to the creator or admin. Instead, it simply logs the event and approves the update unconditionally. This means any user can call UpdateApplication and replace the contract logic with malicious code.",
+                            "vulnerability_name": "arbitrary_update",
+                            "status": "vulnerable",
+                            "description": "The contract does not restrict updates to the creator or admin, allowing any user to update the contract logic. This makes it vulnerable to arbitrary updates, where an attacker can replace the contract with malicious code."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses OnCompletion handlers (specifically handling UpdateApplication) and is compiled with Mode.Application. The contract does not handle the DeleteApplication OnCompletion action, which means any attempt to delete the application will fail by default. This is because the contract only checks for UpdateApplication and does not include any logic for DeleteApplication. Since the contract does not explicitly handle DeleteApplication, it is not vulnerable to arbitrary deletion.",
+                            "vulnerability_name": "arbitrary_delete",
+                            "status": "not vulnerable",
+                            "description": "The contract does not handle the DeleteApplication OnCompletion action, making it impossible to delete the application through normal means. This default behavior effectively prevents unauthorized deletion, thus the contract is not vulnerable to arbitrary delete attacks."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal9.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses App.globalPut and handles OnCompletion.UpdateApplication. The vulnerability being analyzed is 'Arbitrary update', which occurs when contract updates are not properly restricted. In the given contract, the update handler (update) does not check the sender's authority before allowing the update. Specifically, it unconditionally executes App.globalPut and returns Int(1), allowing any sender to update the contract. The required security check to restrict updates to the creator or admin is missing.",
+                            "vulnerability_name": "arbitrary_update",
+                            "status": "vulnerable",
+                            "description": "The contract does not restrict updates to the creator or admin, allowing any sender to call UpdateApplication and modify the contract logic. The update handler lacks checks like Txn.sender() == Global.creator_address() or similar, making it vulnerable to arbitrary updates."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it uses App.globalPut and handles lifecycle events like OnComplete.UpdateApplication. The vulnerability to analyze is 'Unchecked Payment Receiver', which applies to payment transactions (TxnType.Payment). However, the contract does not handle any payment transactions; it only updates a global key-value pair. Since there are no payment transactions involved, the vulnerability does not apply to this contract.",
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract does not process any payment transactions (TxnType.Payment), so the 'Unchecked Payment Receiver' vulnerability is not applicable. The contract only handles updates to a global state variable and does not involve any fund transfers."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Unchecked Asset Close To",
+            "results": [
+                {
+                    "contract_id": "pyteal11.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes transactions based on conditions and returns a boolean value. The contract checks for several security vulnerabilities such as transaction fee limits, rekey_to, and close_remainder_to fields. However, it does not explicitly check the asset_close_to field in any of the transaction conditions (txn1, txn2, txn3, txn4). This missing check means that the contract is vulnerable to the 'Unchecked Asset Close To' vulnerability, where an attacker could set the asset_close_to field to their own address and drain remaining asset holdings.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the asset_close_to field in asset transfer transactions, allowing potential malicious redirection of remaining assets to an attacker's address."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a Stateless Smart Contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. The contract handles multiple transaction types based on the group index, including Payment and AssetTransfer transactions. For the AssetTransfer transactions (txn2 and txn4), the contract checks for the transaction fee, rekey_to, close_remainder_to, and type_enum. However, it does not validate the asset_receiver field, which is crucial for ensuring that asset transfers only go to whitelisted addresses. This missing check makes the contract vulnerable to the Unchecked Asset Receiver vulnerability.",
+                            "vulnerability_name": "Unchecked_Asset_Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the asset_receiver field in Asset Transfer Transactions, allowing potential redirection of tokens to unauthorized addresses. The required check (e.g., Txn.asset_receiver() == trusted_address) is missing in both txn2 and txn4."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. The contract authorizes transactions based on their group index and performs various checks for each transaction type. The vulnerability being analyzed is 'Unchecked Transaction Fee', which is applicable to stateless smart contracts. The contract includes checks for transaction fees in all transaction types (txn1, txn2, txn3, txn4) using Assert(Txn.fee() <= fee_limit), where fee_limit is set to Int(1000). This ensures that the transaction fee does not exceed the specified limit, mitigating the risk of excessive fees.",
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract properly validates the transaction fee by ensuring it does not exceed the predefined limit (1000 microALGO) in all transaction types, thus preventing the possibility of excessive fees being exploited."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal12.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to authorize a group of transactions, including asset transfers. The vulnerability being analyzed is 'Unchecked Asset Close To', which is relevant to stateless smart contracts that handle asset transfers. The code checks the 'asset_close_to' field for the first asset transfer (txn_0) and ensures it is set to Global.zero_address(). However, the second asset transfer (txn_1) does not check the 'asset_close_to' field at all, which could allow an attacker to set it to their own address and drain remaining assets.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the 'asset_close_to' field in the second asset transfer transaction (txn_1), making it vulnerable to asset draining attacks. While the first asset transfer (txn_0) properly checks this field, the absence of such a check in txn_1 leaves the contract exposed to malicious exploitation where an attacker could redirect remaining assets to their own address."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes a group of transactions (AssetTransfer and Payment) with specific conditions. The vulnerability to analyze is 'Unchecked Transaction Fee', which is applicable to stateless smart contracts. The contract checks the transaction fee for each transaction in the group (Gtxn[0].fee() <= max_fee, Gtxn[1].fee() <= max_fee, Gtxn[2].fee() <= max_fee), ensuring that the fee does not exceed the predefined max_fee (1500 microALGO). This check prevents attackers from submitting transactions with abnormally high fees.",
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract properly validates the transaction fee for all critical transactions by ensuring that each transaction's fee does not exceed the predefined max_fee (1500 microALGO). This prevents the exploitation of the contract through transactions with excessive fees."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. The contract authorizes a group of three transactions: two asset transfers and one payment. Each transaction in the group explicitly checks that the rekey_to field is set to Global.zero_address(). This includes Gtxn[0].rekey_to() == Global.zero_address(), Gtxn[1].rekey_to() == Global.zero_address(), and Gtxn[2].rekey_to() == Global.zero_address(). These checks ensure that no transaction in the group can be used to rekey the account to an attacker's address.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The contract explicitly validates the rekey_to field for all transactions in the group, ensuring it is set to Global.zero_address(). This prevents any potential rekeying attacks."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal13.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to validate a single asset transfer transaction. The vulnerability being analyzed is 'Unchecked Asset Close To', which applies to stateless smart contracts that authorize asset transfer transactions. The contract checks several fields of the transaction, including the fee, asset receiver, asset amount, note, and rekey_to, but it does not check the asset_close_to field. This missing check means that an attacker could set the asset_close_to field to their own address, potentially draining remaining asset holdings.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the asset_close_to field, allowing an attacker to set it to their own address and potentially drain remaining asset holdings. The required security check (Txn.asset_close_to() == Global.zero_address() or a trusted address) is missing."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes a single AssetTransfer transaction. The vulnerability being analyzed is 'Unchecked Close Remainder To', which applies to payment transactions. However, the contract in question only handles AssetTransfer transactions, not Payment transactions. Therefore, the vulnerability does not apply to this contract as it does not authorize any payment transactions where the 'close_remainder_to' field could be a concern.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateless smart contract that only authorizes AssetTransfer transactions, not Payment transactions. Since the 'Unchecked Close Remainder To' vulnerability specifically pertains to Payment transactions, this contract is not vulnerable to it."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to validate a single asset transfer transaction. The vulnerability being analyzed is 'Unchecked Rekey to', which is applicable to stateless smart contracts. The contract explicitly checks that the rekey_to field is set to Global.zero_address() for the asset transfer transaction (Gtxn[0].rekey_to() == Global.zero_address()). This check ensures that the transaction cannot be used to rekey the account to an attacker's address, thus mitigating the vulnerability.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The contract explicitly validates the rekey_to field for the asset transfer transaction, ensuring it is set to Global.zero_address(). This prevents the transaction from being used to rekey the account to an attacker's address."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal14.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code implements a Stateless Smart Contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. The contract checks a group of five transactions, including one Asset Transfer transaction (tx5_check). The vulnerability being analyzed is 'Unchecked Asset Receiver', which applies to Asset Transfer transactions. The contract does not validate the asset_receiver field in the Asset Transfer transaction (Gtxn[4]), meaning it does not ensure the asset transfer goes to a whitelisted address. This missing check makes the contract vulnerable to the 'Unchecked Asset Receiver' vulnerability.",
+                            "vulnerability_name": "Unchecked_Asset_Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the asset_receiver field in the Asset Transfer transaction (Gtxn[4]), allowing potential redirection of assets to unauthorized addresses. A proper check like Gtxn[4].asset_receiver() == trusted_address is missing."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes a group of transactions, including an asset transfer transaction (Gtxn[4]). The vulnerability being analyzed is 'Unchecked Asset Close To', which applies to stateless smart contracts that authorize asset transfer transactions. The code checks for various conditions in the asset transfer transaction (Gtxn[4]), such as the transaction type, fee, rekey_to, asset ID, and asset amount. However, it does not check the 'asset_close_to' field, which could allow an attacker to set this field to their own address and drain remaining assets. The required security check would be to ensure that 'asset_close_to' is either Global.zero_address() or a predefined safe address, but this check is missing in the code.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "vulnerable",
+                            "description": "The stateless smart contract authorizes an asset transfer transaction (Gtxn[4]) but does not validate the 'asset_close_to' field, making it vulnerable to asset draining attacks. An attacker could set 'asset_close_to' to their own address to receive remaining assets. The contract should include a check like Gtxn[4].asset_close_to() == Global.zero_address() to mitigate this vulnerability."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes a group of five transactions, including payment transactions. The vulnerability being analyzed is 'Unchecked Close Remainder To', which applies to stateless smart contracts that authorize payment transactions. The contract checks the 'close_remainder_to' field in all payment transactions (Gtxn[0], Gtxn[1], Gtxn[2], Gtxn[3]) and ensures it is set to Global.zero_address(). This explicit validation prevents the remaining account balance from being redirected to arbitrary addresses, thus mitigating the vulnerability.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The stateless smart contract explicitly validates that the 'close_remainder_to' field in all payment transactions is set to Global.zero_address(), preventing unauthorized redirection of the remaining account balance."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes a group of transactions with specific conditions. The vulnerability being analyzed is 'Unchecked Transaction Fee', which is relevant to stateless smart contracts. The contract checks the transaction fees for each transaction in the group (Gtxn[0].fee() <= Int(1500), Gtxn[1].fee() <= Int(1500), Gtxn[2].fee() <= Int(1500), Gtxn[3].fee() <= Int(1500), Gtxn[4].fee() <= Int(2000)), ensuring they do not exceed specified maximum values. This effectively mitigates the risk of excessive fees being charged.",
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract properly validates transaction fees for all critical transactions, ensuring they do not exceed specified maximum values (1500 and 2000 microALGOs), thus preventing the Unchecked Transaction Fee vulnerability."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal15.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a Stateless Smart Contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It checks for a group of three transactions, including two Asset Transfer transactions and one Payment transaction. The vulnerability being analyzed is 'Unchecked Asset Receiver', which applies to Asset Transfer transactions. The contract checks various fields of the Asset Transfer transactions, such as fee, rekey_to, xfer_asset, and asset_amount, but it does not validate the asset_receiver field. This means the contract does not ensure that the asset transfers only go to whitelisted addresses, making it vulnerable to the Unchecked Asset Receiver vulnerability.",
+                            "vulnerability_name": "Unchecked_Asset_Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the asset_receiver field in Asset Transfer Transactions, allowing attackers to redirect tokens to unauthorized addresses. The required security check (e.g., Gtxn[i].asset_receiver() == trusted_address) is missing."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a Stateless Smart Contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It checks for a group of three transactions: two asset transfers and one payment. The vulnerability to analyze is 'Unchecked Payment Receiver', which applies to payment transactions. The contract checks that the payment transaction's receiver is not the same as the sender of the first asset transfer (Gtxn[2].receiver() != Gtxn[0].sender()). However, this check is insufficient as it does not validate the receiver against a whitelisted or intended address. The contract only ensures the receiver is not the sender of the first asset transfer, which does not prevent funds from being sent to any other unauthorized address.",
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract fails to properly validate the recipient address in the payment transaction, allowing funds to be sent to unauthorized addresses. The check Gtxn[2].receiver() != Gtxn[0].sender() is insufficient as it does not restrict the receiver to a specific whitelisted address."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It checks for a group of three transactions and validates each transaction's type, fee, rekey_to, and other parameters. The vulnerability being analyzed is 'Unchecked Transaction Fee', which applies to stateless smart contracts. The contract checks the fee for each transaction in the group (Gtxn[0].fee() <= Int(2500), Gtxn[1].fee() <= Int(2500), Gtxn[2].fee() <= Int(1500)), ensuring that the fees are capped at reasonable values (2500 and 1500 microALGOs respectively).",
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract properly validates the transaction fees for all critical transactions in the group, capping them at 2500 and 1500 microALGOs respectively, thus preventing the possibility of excessive fees being exploited."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes a group of three transactions: two asset transfers and one payment. The vulnerability being analyzed is 'Unchecked Rekey to', which is applicable to stateless smart contracts that authorize transactions. The contract explicitly checks the 'rekey_to' field for all three transactions (Gtxn[0], Gtxn[1], and Gtxn[2]) to ensure it is set to Global.zero_address(). This validation prevents any unauthorized rekeying of the account.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The contract explicitly validates the 'rekey_to' field for all transactions in the group, ensuring it is set to Global.zero_address(). This prevents any potential rekeying attacks, making the contract secure against the 'Unchecked Rekey to' vulnerability."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Unchecked Close Remainder To",
+            "results": [
+                {
+                    "contract_id": "pyteal16.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to authorize payment transactions with specific conditions. The vulnerability to analyze is 'Unchecked Close Remainder To', which is relevant for stateless smart contracts that authorize payment transactions. The contract checks several fields of the transaction, including the receiver, amount, fee, lease, and rekey_to, but it does not explicitly check the close_remainder_to field. This omission means that the contract does not prevent the remaining balance of the account from being sent to an arbitrary address if the close_remainder_to field is set in a payment transaction.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "vulnerable",
+                            "description": "The stateless smart contract does not validate the close_remainder_to field in payment transactions, allowing potential attackers to drain the remaining account balance to an arbitrary address. The contract should include a check to ensure that close_remainder_to is either Global.zero_address() or a trusted address."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to authorize periodic payment transactions. The vulnerability being analyzed is 'Unchecked Rekey to', which is applicable to stateless smart contracts. The contract explicitly checks that the 'rekey_to' field is set to 'Global.zero_address()' in the 'periodic_pay_core' condition, which is part of the overall transaction validation logic. This check ensures that the account cannot be rekeyed to an attacker's address.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The contract explicitly validates the 'rekey_to' field by ensuring it is set to 'Global.zero_address()', preventing any unauthorized rekeying of the account."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal17.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it is compiled with `mode=Mode.Application` and involves multiple transaction checks within a group. The contract does not explicitly handle the `UpdateApplication` OnCompletion action. By default, if the contract does not handle `UpdateApplication`, any attempt to update the application will fail, effectively preventing unauthorized updates. The contract focuses on validating a group of transactions but does not include any logic to handle application updates, which means it inherently disallows updates by not providing a handler for `UpdateApplication`.",
+                            "vulnerability_name": "arbitrary_update",
+                            "status": "not vulnerable",
+                            "description": "The contract does not handle the `UpdateApplication` OnCompletion action, making it impossible to update the application logic. This default behavior effectively prevents unauthorized updates, thus the contract is not vulnerable to arbitrary updates."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes a group of transactions (6 in total) with various checks. The vulnerability to analyze is 'Unchecked Close Remainder To', which applies to stateless smart contracts that authorize payment transactions. The contract includes two payment transactions (Gtxn[1] and Gtxn[4]). For Gtxn[1], there is no check on the 'close_remainder_to' field, making it vulnerable. However, for Gtxn[4], the 'close_remainder_to' field is explicitly checked to be 'Global.zero_address()', which is the correct security check.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "vulnerable",
+                            "description": "The contract is vulnerable because it does not check the 'close_remainder_to' field in Gtxn[1], allowing an attacker to set it to an arbitrary address and drain the remaining balance. Although Gtxn[4] correctly checks this field, the vulnerability in Gtxn[1] remains."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it includes multiple transaction checks within a group and handles various transaction types including ApplicationCall, Payment, and AssetTransfer. The vulnerability being analyzed is 'Unchecked Rekey to', which is applicable to both stateless and stateful smart contracts. The contract explicitly checks the 'rekey_to' field for all transactions (txn0 to txn5) to ensure it is set to Global.zero_address(). This validation is present in every transaction within the group, which is the required security check to mitigate the 'Unchecked Rekey to' vulnerability.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The contract explicitly validates the 'rekey_to' field for all transactions, ensuring it is set to Global.zero_address(). This prevents any unauthorized rekeying of accounts, thus mitigating the 'Unchecked Rekey to' vulnerability."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal18.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it is compiled with `mode=Mode.Application` and involves multiple transaction checks within a group. The vulnerability to analyze is 'Unchecked Rekey to', which applies to both stateless and stateful smart contracts. The contract checks various fields of the transactions in the group, including fee, receiver, and close_remainder_to, but it does not explicitly check the `rekey_to` field for any of the transactions. This omission means that the contract is vulnerable to the 'Unchecked Rekey to' vulnerability, as an attacker could include a transaction with a malicious `rekey_to` address to take control of the account.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the `rekey_to` field in any of the transactions within the group, allowing potential attackers to rekey the account to a malicious address. The required security check `Txn.rekey_to() == Global.zero_address()` or `Gtxn[i].rekey_to() == Global.zero_address()` is missing for all transactions."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it is compiled with `mode=Mode.Application` and involves handling multiple transactions in a group. The vulnerability 'Unchecked Asset Close To' is specific to stateless smart contracts (LogicSig or Contract Account) that authorize asset transfer transactions. Since this is a stateful application, the vulnerability does not apply. Additionally, the code does not involve any asset close operations that would need to be checked for this vulnerability.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful application and does not handle asset close operations, making the 'Unchecked Asset Close To' vulnerability inapplicable."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it is compiled with `mode=Mode.Application` and involves handling multiple transaction types within a group. The vulnerability being analyzed is 'Unchecked Close Remainder To', which applies to stateless smart contracts (LogicSig) that authorize payment transactions. Since this is a stateful smart contract, the vulnerability does not apply. Additionally, the code explicitly checks that `close_remainder_to` is set to `Global.zero_address()` for the payment transaction at index 4, which is a correct security measure if this were a stateless contract.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "vulnerable",
+                            "description": "The contract is a stateful smart contract, and the 'Unchecked Close Remainder To' vulnerability only applies to stateless smart contracts. Furthermore, the contract correctly checks that `close_remainder_to` is set to `Global.zero_address()` for the relevant payment transaction, which would mitigate the vulnerability if it were applicable."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal19.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes a group of transactions, including a payment and an asset transfer. The vulnerability to analyze is 'Unchecked Asset Close To', which applies to stateless smart contracts that authorize asset transfer transactions. The contract includes checks for various transaction fields such as fee, rekey_to, receiver, and amount, but it does not explicitly check the asset_close_to field for the asset transfer transaction (Gtxn[2]). This missing check could allow an attacker to set the asset_close_to field to their own address, potentially draining remaining assets.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the asset_close_to field in the asset transfer transaction (Gtxn[2]), which could allow an attacker to redirect remaining assets to their own address. A legitimate check would ensure that asset_close_to is either Global.zero_address() or a predefined safe address."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a Stateless Smart Contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to authorize a group of transactions, including a Payment and an Asset Transfer. The vulnerability to analyze is 'Unchecked Asset Receiver', which applies to Asset Transfer Transactions (ASA transfers). The contract includes an Asset Transfer transaction (Gtxn[2].type_enum() == TxnType.AssetTransfer) but does not validate the asset_receiver() field. This means the contract does not ensure that the asset transfer only goes to whitelisted addresses, making it vulnerable to the Unchecked Asset Receiver vulnerability.",
+                            "vulnerability_name": "Unchecked_Asset_Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the asset_receiver() field in the Asset Transfer transaction (Gtxn[2]), allowing potential redirection of tokens to unauthorized addresses. This missing check makes the contract vulnerable to the Unchecked Asset Receiver vulnerability."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes transactions based on a set of conditions. The vulnerability being analyzed is 'Unchecked Transaction Fee', which is applicable to stateless smart contracts. The contract includes checks for transaction fees in multiple places: Txn.fee() <= max_fee, Gtxn[0].fee() + extra_fee <= max_fee, and Gtxn[2].fee() <= Int(1000). These checks ensure that the transaction fees are capped, preventing the exploitation of excessive fees.",
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract properly validates transaction fees by capping them with checks like Txn.fee() <= max_fee and Gtxn[0].fee() + extra_fee <= max_fee, ensuring no transaction can have an abnormally high fee."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal20.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to authorize payment transactions. The vulnerability being analyzed is 'Unchecked Close Remainder To', which is relevant to stateless smart contracts that authorize payment transactions. The contract includes a check for `Txn.close_remainder_to() == Global.zero_address()` in the `split_transfer` condition, which ensures that the `close_remainder_to` field is set to the zero address, preventing arbitrary closure of the account. This check is present in the context of a group transaction where `Global.group_size() == Int(2)`. Additionally, the contract also includes checks for `Txn.rekey_to() == Global.zero_address()` and `Txn.fee() < tmpl_fee`, which are good practices for security.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "vulnerable",
+                            "description": "The contract explicitly validates that `close_remainder_to` is set to `Global.zero_address()` in payment transactions, preventing the vulnerability where remaining account balances could be redirected to arbitrary destinations. The required security check is present and correctly implemented."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to authorize payment transactions with specific conditions. The vulnerability being analyzed is 'Unchecked Transaction Fee', which is applicable to stateless smart contracts. The contract includes a check for the transaction fee with the condition `Txn.fee() < tmpl_fee`, where `tmpl_fee` is set to 1000 microALGO. This ensures that the transaction fee does not exceed the specified maximum, thus mitigating the risk of excessive fees.",
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract properly validates the transaction fee by ensuring it is less than the predefined maximum fee (1000 microALGO), preventing the possibility of excessive fees being charged."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Not Vulnerable",
+            "results": [
+                {
+                    "contract_id": "pyteal21.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to authorize a group of two asset transfer transactions. The vulnerability being analyzed is 'Unchecked Asset Close To', which is relevant for stateless smart contracts that handle asset transfers. The code explicitly checks that the 'asset_close_to' field is set to 'Global.zero_address()' for both transactions (Gtxn[0] and Gtxn[1]). This check ensures that no assets can be maliciously redirected to an attacker's address. Additionally, the contract also checks other critical fields like 'rekey_to' and 'fee', further enhancing its security.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract properly validates that 'asset_close_to' is set to 'Global.zero_address()' for both asset transfer transactions, preventing any unauthorized redirection of remaining assets. This check effectively mitigates the 'Unchecked Asset Close To' vulnerability."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes a group of two asset transfer transactions. The vulnerability being analyzed is 'Unchecked Close Remainder To', which applies to payment transactions in stateless contracts. However, the contract in question only handles asset transfer transactions (TxnType.AssetTransfer) and does not include any payment transactions (TxnType.Payment). Since the contract does not authorize payment transactions, the 'close_remainder_to' field is not relevant here. The contract does properly check 'asset_close_to' for asset transfers, ensuring it is set to Global.zero_address().",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateless smart contract that only handles asset transfer transactions, not payment transactions. Since the 'close_remainder_to' field is specific to payment transactions, the vulnerability does not apply. The contract properly validates 'asset_close_to' for asset transfers, ensuring it is set to Global.zero_address()."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal22.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to authorize payment transactions with specific conditions. The contract includes checks for `close_remainder_to` in both the `split_transfer` and `split_close` conditions. In `split_transfer`, it ensures that `close_remainder_to` is set to `Global.zero_address()`, and in `split_close`, it allows `close_remainder_to` to be set to a trusted address (`tmpl_own`). These checks prevent the `close_remainder_to` field from being set to an arbitrary address, thus mitigating the vulnerability.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract explicitly validates the `close_remainder_to` field in payment transactions, ensuring it is either set to `Global.zero_address()` or a trusted address (`tmpl_own`). This prevents attackers from redirecting the remaining account balance to arbitrary destinations."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a Stateless Smart Contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. The contract is designed to handle payment transactions and includes checks for the transaction type, fee, rekey_to, and close_remainder_to. The vulnerability to analyze is 'Unchecked Payment Receiver', which applies to payment transactions where the receiver must be authorized. The contract includes explicit checks for the receivers in the payment transactions (Gtxn[0].receiver() == tmpl_rcv1 and Gtxn[1].receiver() == tmpl_rcv2), ensuring that payments only go to whitelisted addresses. Additionally, the contract checks that the close_remainder_to is set to Global.zero_address() in the transfer scenario and to tmpl_own in the close scenario, further ensuring that funds are not sent to unauthorized addresses.",
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract properly validates the recipient addresses in payment transactions by checking against predefined whitelisted addresses (tmpl_rcv1 and tmpl_rcv2). It also ensures that close_remainder_to is either zero or the owner's address, preventing unauthorized fund redirection."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal23.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to authorize payment transactions. The vulnerability being analyzed is 'Unchecked Close Remainder To', which is relevant for stateless smart contracts that handle payment transactions. The contract includes checks for `close_remainder_to` in both the `split_transfer` and `split_close` conditions. In `split_transfer`, it ensures `close_remainder_to` is set to `Global.zero_address()`. In `split_close`, it allows `close_remainder_to` to be set to a trusted address (`tmpl_own`). These checks prevent arbitrary closure of the account to unauthorized addresses.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract properly validates the `close_remainder_to` field in payment transactions, ensuring it is either set to `Global.zero_address()` or a trusted address (`tmpl_own`), thus mitigating the risk of unauthorized account closure."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to authorize transactions based on certain conditions. The vulnerability being analyzed is 'Unchecked Transaction Fee', which is applicable to stateless smart contracts. The contract checks the transaction fee with the condition `Txn.fee() < tmpl_fee`, where `tmpl_fee` is set to 1000 microALGO. This ensures that the transaction fee is capped and prevents excessive fees from being charged. Therefore, the contract is not vulnerable to the 'Unchecked Transaction Fee' vulnerability.",
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract properly validates the transaction fee by ensuring it is less than a predefined maximum value (tmpl_fee = 1000 microALGO), thus preventing the possibility of excessive fees being charged."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal24.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes payment transactions by checking various fields. The vulnerability being analyzed is 'Unchecked Close Remainder To', which is relevant to stateless smart contracts that authorize payment transactions. The contract explicitly checks that the `close_remainder_to` field is set to `Global.zero_address()`, which is the required security check to prevent arbitrary closure of the account. Additionally, the contract also checks other fields like `rekey_to` and `fee` to ensure they are set to secure values.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly validates that the `close_remainder_to` field is set to `Global.zero_address()` in payment transactions, preventing unauthorized redirection of remaining account balances."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is a simple payment authorization contract that checks several transaction properties. The vulnerability being analyzed is 'Unchecked Transaction Fee', which is relevant for stateless smart contracts. The contract includes a check for the transaction fee with the line 'Txn.fee() <= Int(1000)', which ensures that the fee does not exceed 1000 microALGOs. This check effectively prevents the Unchecked Transaction Fee vulnerability by capping the fee at a reasonable amount.",
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract includes a fee check 'Txn.fee() <= Int(1000)', which caps the transaction fee at 1000 microALGOs, preventing the Unchecked Transaction Fee vulnerability."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal25.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses App.* operations (App.globalPut, App.globalGet) and defines lifecycle events via OnCompletion handlers (NoOp, DeleteApplication). The vulnerability to analyze is 'Unchecked Rekey to', which applies to stateless smart contracts (LogicSig or Contract Account) that authorize asset transfer or payment transactions. Since this is a stateful smart contract, the vulnerability does not apply. The contract does not handle any payment or asset transfer transactions that would require checking the RekeyTo field.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful smart contract (Application) and does not handle payment or asset transfer transactions that would require checking the RekeyTo field. The 'Unchecked Rekey to' vulnerability is not applicable to this contract type."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses App.globalPut and App.globalGet operations, and defines handlers for various OnCompletion events (NoOp, DeleteApplication). The vulnerability being analyzed is 'Unchecked Transaction Fee', which typically applies to stateless smart contracts (LogicSig or Contract Account) where the sender can be victimized by excessive fees. Since this is a stateful application, the vulnerability does not apply in the same way. Stateful applications don't directly authorize transactions with fees in the same manner as stateless contracts. The contract does not handle transaction fees at all, but this is not considered a vulnerability for stateful applications as the fee is paid by the transaction sender and doesn't affect the contract's state or logic.",
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful application where transaction fees are not relevant to the contract's security model. The 'Unchecked Transaction Fee' vulnerability primarily affects stateless smart contracts, making this contract not vulnerable to this specific issue."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses App.globalPut and App.globalGet operations and handles lifecycle events like DeleteApplication. The vulnerability to analyze is 'Arbitrary update', which checks if the contract allows unauthorized updates. The contract does not explicitly handle the OnComplete.UpdateApplication case in its Cond statement. By default, if the contract does not handle UpdateApplication, any attempt to update it will fail, effectively preventing unauthorized updates. The contract includes checks for other operations like NoOp and DeleteApplication, ensuring only the admin can delete the application, but it does not provide any explicit handling for UpdateApplication, which means updates are disabled by default.",
+                            "vulnerability_name": "arbitrary_update",
+                            "status": "not vulnerable",
+                            "description": "The contract does not handle OnComplete.UpdateApplication, making it impossible to update the contract logic. This default behavior effectively prevents any unauthorized updates, including malicious ones."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses App.globalPut and App.globalGet operations and defines handlers for various OnCompletion events (NoOp, DeleteApplication). The contract manages access control with an admin and tracks access counts but does not handle any payment transactions (TxnType.Payment). Since the vulnerability 'Unchecked Payment Receiver' specifically applies to payment transactions and the contract does not process any payment transactions, the vulnerability is not applicable.",
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract does not process any payment transactions (TxnType.Payment), hence there is no risk of unchecked payment receivers. The vulnerability is not applicable to this contract."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Unchecked Rekey to",
+            "results": [
+                {
+                    "contract_id": "pyteal26.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It checks for a group size of 2 and validates two transactions: a payment transaction (Gtxn[0]) and an asset transfer transaction (Gtxn[1]). The vulnerability being analyzed is 'Unchecked Rekey to', which requires explicit validation of the rekey_to field in all payment and asset transfer transactions. In the code, the payment transaction (Gtxn[0]) does not check the rekey_to field, while the asset transfer transaction (Gtxn[1]) explicitly checks that rekey_to is set to Global.zero_address().",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "vulnerable",
+                            "description": "The payment transaction (Gtxn[0]) lacks an explicit check for the rekey_to field, making it vulnerable to the 'Unchecked Rekey to' attack. Although the asset transfer transaction (Gtxn[1]) correctly checks the rekey_to field, the absence of this check in the payment transaction means the contract is not fully secure against rekeying attacks."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a Stateless Smart Contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It checks for a group of two transactions: a payment transaction and an asset transfer transaction. The vulnerability to analyze is 'Unchecked Payment Receiver', which applies to payment transactions. The contract includes a check for the payment transaction's receiver address, ensuring it matches a specific whitelisted address (Addr('XEMH3GGFQBEIWES7ZRGPD6DAHSUKUZIC7JXVOFYROTUYH7QZGU2N6AFSFE')). This check prevents unauthorized redirection of funds.",
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract properly validates the recipient address in the payment transaction by comparing it to a whitelisted address, thus mitigating the Unchecked Payment Receiver vulnerability."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes a group of two transactions: a payment transaction and an asset transfer transaction. The vulnerability being analyzed is 'Unchecked Asset Close To', which is relevant to stateless smart contracts that handle asset transfers. The contract explicitly checks that the 'asset_close_to' field in the asset transfer transaction is set to 'Global.zero_address()', which is the correct security measure to prevent the vulnerability. Additionally, the contract checks other fields like 'rekey_to' and 'close_remainder_to' to ensure they are also set to 'Global.zero_address()', further enhancing security.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly validates that the 'asset_close_to' field is set to 'Global.zero_address()' in the asset transfer transaction, preventing any unauthorized redirection of remaining assets. This check ensures that the contract is not vulnerable to the 'Unchecked Asset Close To' attack."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It checks for a group of two transactions: a payment transaction and an asset transfer transaction. The vulnerability being analyzed is 'Unchecked Transaction Fee', which requires that all critical transactions have capped fees. In the code, both transactions (Gtxn[0] and Gtxn[1]) have explicit checks for the fee being less than or equal to 1000 microALGOs (Gtxn[0].fee() <= Int(1000) and Gtxn[1].fee() <= Int(1000)). These checks ensure that the transaction fees are capped, preventing the possibility of excessive fees being exploited.",
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract properly validates the transaction fees for both the payment and asset transfer transactions by capping them at 1000 microALGOs, thus mitigating the risk of the Unchecked Transaction Fee vulnerability."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal27.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to authorize an asset transfer transaction. The contract checks several fields of the transaction, including the asset receiver, asset amount, fee, and asset close to address. However, it does not explicitly check the rekey_to field of the transaction. This omission means that the contract does not prevent the transaction from being rekeyed to another address, which could lead to a loss of control over the account.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the rekey_to field in the transaction, making it vulnerable to the Unchecked Rekey to attack. An attacker could exploit this by setting the rekey_to field to their own address, thereby gaining control over the account. The contract should include a check such as Gtxn[0].rekey_to() == Global.zero_address() to mitigate this risk."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It checks for a single transaction in the group (group_size_check) and validates several properties of that transaction (txn_0_checks), including the transaction type, asset receiver, asset amount, and asset close to address. Importantly, it also checks that the transaction fee is less than or equal to 1000 microALGOs (Gtxn[0].fee() <= Int(1000)). This check ensures that the transaction fee is capped, preventing the Unchecked Transaction Fee vulnerability.",
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "not vulnerable",
+                            "description": "The contract properly validates the transaction fee by ensuring it does not exceed 1000 microALGOs, thus mitigating the risk of excessive fees being charged to the sender."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to authorize a single asset transfer transaction. The vulnerability being analyzed is 'Unchecked Asset Close To', which is relevant to stateless smart contracts that handle asset transfers. The contract includes a check for the asset_close_to field, ensuring it is set to Global.zero_address(). This check prevents the vulnerability by ensuring that any remaining assets cannot be maliciously redirected to an attacker's address.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly validates that the asset_close_to field is set to Global.zero_address(), preventing any unauthorized redirection of remaining assets. This security check ensures the contract is not vulnerable to the 'Unchecked Asset Close To' attack."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal28.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It checks a group of three transactions for specific conditions. The vulnerability to analyze is 'Unchecked Rekey to', which requires explicit validation of the rekey_to field in all payment and asset transfer transactions to ensure it is set to Global.zero_address().\n\nIn the code:\n- The first transaction (Gtxn[0]) is an ApplicationCall and explicitly checks rekey_to against a specific address, not Global.zero_address(). This is not a standard check for preventing rekey attacks.\n- The second transaction (Gtxn[1]) is a Payment transaction but does not check the rekey_to field at all.\n- The third transaction (Gtxn[2]) is an AssetTransfer transaction but also does not check the rekey_to field.\n\nNone of the transactions in the group explicitly validate the rekey_to field against Global.zero_address(), which is the required security check for preventing the 'Unchecked Rekey to' vulnerability.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the rekey_to field in any of the transactions against Global.zero_address(), making it vulnerable to the 'Unchecked Rekey to' attack where an attacker could gain control of the account by setting a malicious rekey_to address."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes a group of three transactions. The vulnerability to analyze is 'Unchecked Close Remainder To', which applies to stateless smart contracts that authorize payment transactions. The contract includes a payment transaction (Gtxn[1]) and explicitly checks that the close_remainder_to field is set to Global.zero_address(). This check ensures that the remaining account balance cannot be redirected to an arbitrary address, thus mitigating the vulnerability.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The stateless smart contract correctly validates the close_remainder_to field in the payment transaction (Gtxn[1]) by ensuring it is set to Global.zero_address(). This prevents the remaining account balance from being sent to an unauthorized address."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal29.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes a group of four transactions with specific conditions. The vulnerability to analyze is 'Unchecked Rekey to', which applies to stateless smart contracts that authorize payment or asset transfer transactions. The contract checks the 'rekey_to' field in the second and fourth transactions (both payment transactions) to ensure they are set to Global.zero_address(). However, the third transaction is an asset transfer transaction, and it does not check the 'rekey_to' field. This omission means the asset transfer transaction could potentially be rekeyed to an attacker's address, making the contract vulnerable to the 'Unchecked Rekey to' vulnerability.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "vulnerable",
+                            "description": "The contract fails to check the 'rekey_to' field in the asset transfer transaction (third transaction), allowing potential rekeying to an attacker's address. While payment transactions (second and fourth) correctly validate 'rekey_to', the asset transfer transaction does not, making the contract vulnerable to account takeover via rekeying."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes a group of four transactions with specific conditions. The vulnerability to analyze is 'Unchecked Asset Close To', which applies to stateless smart contracts that authorize asset transfer transactions. In the code, the third transaction (Gtxn[2]) is an AssetTransfer transaction, but there is no check for the 'asset_close_to' field. The contract does not validate whether 'asset_close_to' is set to Global.zero_address() or a trusted address, which could allow an attacker to drain remaining assets to their own address.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "vulnerable",
+                            "description": "The stateless smart contract does not check the 'asset_close_to' field in the AssetTransfer transaction (Gtxn[2]), making it vulnerable to asset draining attacks. The contract should ensure that 'asset_close_to' is either Global.zero_address() or a predefined safe address."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal30.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It checks a group of transactions for various conditions. The vulnerability to analyze is 'Unchecked Rekey to', which applies to stateless smart contracts that authorize asset transfer or payment transactions. The contract checks the 'rekey_to' field in transactions 1, 2, and 5, ensuring it is set to Global.zero_address(). However, transactions 3 and 4, which are payment transactions, do not check the 'rekey_to' field. This omission means that these transactions could potentially be rekeyed to an attacker's address, making the contract vulnerable to the 'Unchecked Rekey to' vulnerability.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the 'rekey_to' field in transactions 3 and 4, which are payment transactions. This allows for potential rekeying to an attacker's address, compromising the security of the contract."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It checks a group of transactions for specific conditions. The vulnerability to analyze is 'Unchecked Asset Close To', which applies to stateless smart contracts that authorize asset transfer transactions. The contract checks several transactions, including two asset transfers (Gtxn[2] and Gtxn[5]). However, it does not check the 'asset_close_to' field for these asset transfers. The required security check would be to ensure that 'asset_close_to' is either 'Global.zero_address()' or a predefined safe address. Since this check is missing, the contract is vulnerable to the 'Unchecked Asset Close To' vulnerability.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "vulnerable",
+                            "description": "The stateless smart contract does not validate the 'asset_close_to' field in asset transfer transactions (Gtxn[2] and Gtxn[5]), making it possible for an attacker to drain remaining asset holdings to their own account."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes a group of transactions with specific checks for each transaction in the group. The vulnerability to analyze is 'Unchecked Close Remainder To', which applies to stateless smart contracts that authorize payment transactions. The contract includes checks for `close_remainder_to` in payment transactions (Gtxn[1], Gtxn[3], and Gtxn[4]), ensuring it is set to `Global.zero_address()`. This prevents the remaining account balance from being redirected to arbitrary addresses.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The stateless smart contract explicitly checks that the `close_remainder_to` field is set to `Global.zero_address()` in all payment transactions it authorizes, preventing unauthorized redirection of the remaining account balance."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Unchecked Transaction Fee",
+            "results": [
+                {
+                    "contract_id": "pyteal31.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to verify transactions, specifically checking for payment and asset transfer transactions. The vulnerability being analyzed is 'Unchecked Asset Close To', which applies to stateless smart contracts that authorize asset transfer transactions. The code includes checks for various transaction fields such as type_enum, sender, receiver, rekey_to, close_remainder_to, amount, group_index, asset_receiver, asset_amount, and fee. However, it does not include a check for the asset_close_to field in the asset transfer transaction (Gtxn[2]). This missing check means the contract does not ensure that asset_close_to is either Global.zero_address() or a predefined safe address, making it vulnerable to the 'Unchecked Asset Close To' vulnerability.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "vulnerable",
+                            "description": "The stateless smart contract does not validate the asset_close_to field in the asset transfer transaction, allowing an attacker to potentially drain remaining asset holdings to their own account. The required check for asset_close_to being Global.zero_address() or a trusted address is missing."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a Stateless Smart Contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to verify transactions, specifically checking for payment transactions (TxnType.Payment). The vulnerability being analyzed is 'Unchecked Payment Receiver', which occurs when the recipient address in a payment transaction is not properly validated. In the code, the payment receiver is explicitly checked against a specific address (Addr('2YINOKV3CN6PLHYXTLECTB5V6YQWP2SXGGDJUY2CDXLVHB3GOHG4WKEVCU')) in the 'basic_checks' condition. This ensures that payments can only be sent to this whitelisted address, thus mitigating the 'Unchecked Payment Receiver' vulnerability.",
+                            "vulnerability_name": "Unchecked_Payment_Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract explicitly validates the payment receiver address against a whitelisted address, ensuring that payments can only be sent to the intended recipient. This check prevents unauthorized redirection of funds."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to verify transactions, specifically payment and asset transfer transactions. The vulnerability to analyze is 'Unchecked Rekey to', which is applicable to stateless smart contracts that authorize transactions. The contract explicitly checks the 'rekey_to' field for all transactions (Txn and Gtxn) to ensure it is set to Global.zero_address(). This includes checks for the main transaction (Txn), the second transaction in the group (Gtxn[1]), and the third transaction in the group (Gtxn[2]). Each of these checks ensures that the 'rekey_to' field is validated, preventing unauthorized rekeying.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The contract explicitly validates the 'rekey_to' field for all relevant transactions, ensuring it is set to Global.zero_address(). This prevents any unauthorized rekeying attempts, making the contract secure against the 'Unchecked Rekey to' vulnerability."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal32.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to verify a group of transactions with specific conditions. The vulnerability being analyzed is 'Unchecked Transaction Fee', which is relevant to stateless smart contracts. The contract checks the transaction fees for the first three transactions (Gtxn[0], Gtxn[1], Gtxn[2]) to ensure they are <= 1000 microALGO. However, the fourth transaction (Gtxn[3]) does not have a fee check, which could allow an attacker to submit a transaction with an excessive fee, potentially draining funds from the sender.",
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the transaction fee for the fourth transaction (Gtxn[3]), making it vulnerable to the Unchecked Transaction Fee attack where an attacker could submit a transaction with an abnormally high fee."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes a group of transactions with specific conditions. The vulnerability to analyze is 'Unchecked Rekey to', which is applicable to stateless smart contracts. The contract explicitly checks the 'rekey_to' field for all transactions (Gtxn[0], Gtxn[1], Gtxn[2], Gtxn[3]) to ensure it is set to Global.zero_address(). This validation is present in every applicable transaction, thus mitigating the risk of the Rekey-To vulnerability.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The contract explicitly validates the 'rekey_to' field for all transactions, ensuring it is set to Global.zero_address(). This prevents attackers from rekeying the account to an unauthorized address."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal33.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. The contract checks several transaction fields such as fee, close_remainder_to, asset_close_to, and rekey_to, but it does not validate the receiver address in payment transactions. Since the vulnerability being analyzed is 'Unchecked Payment Receiver', which applies to payment transactions, and the contract does not perform any validation on the receiver address, it is vulnerable to this issue.",
+                            "vulnerability_name": "Unchecked_Payment_Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the receiver address in payment transactions, allowing potential redirection of funds to unauthorized addresses. The required check (e.g., Txn.receiver() == valid_receiver) is missing."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. The contract checks for several security vulnerabilities such as unchecked transaction fees, close remainder to, asset close to, and rekey to. However, the vulnerability being analyzed is 'Unchecked Asset Receiver', which applies to Asset Transfer Transactions (ASA transfers). The contract does not handle any asset transfer transactions (TxnType.AssetTransfer) and thus does not include any checks for the asset_receiver field. Since the contract does not process asset transfers, the vulnerability is not applicable.",
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateless smart contract that does not handle asset transfer transactions. Therefore, it does not include any checks for the asset_receiver field, but since it does not process asset transfers, the vulnerability is not applicable."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes transactions based on conditions related to transaction fees, close_remainder_to, asset_close_to, and rekey_to fields. The vulnerability being analyzed is 'Unchecked Asset Close To', which is relevant for stateless smart contracts that authorize asset transfer transactions. The contract explicitly checks that Txn.asset_close_to() == Global.zero_address() in all transaction sequences (txn1, txn2, txn3), ensuring that the asset_close_to field is set to the zero address, which is the required security check to prevent the vulnerability.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract properly validates that the asset_close_to field is set to Global.zero_address() in all transaction sequences, preventing unauthorized redirection of remaining assets to an attacker's address."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes transactions based on conditions related to the transaction group index. The contract includes checks for transaction fees in `txn1` and `txn3` but notably misses this check in `txn2`. This omission means that transactions with group index 1 can bypass the fee limit check, potentially allowing attackers to submit transactions with excessive fees. The contract does correctly validate other critical fields like `close_remainder_to`, `asset_close_to`, and `rekey_to` across all transactions.",
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "vulnerable",
+                            "description": "The contract fails to enforce a fee limit check in `txn2`, making it vulnerable to the Unchecked Transaction Fee vulnerability. Attackers could exploit this by submitting transactions with group index 1 and high fees, potentially draining funds from the sender."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal34.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It checks multiple transactions for various conditions, including fee limits. The vulnerability being analyzed is 'Unchecked Transaction Fee', which applies to stateless smart contracts. The contract includes checks for transaction fees in the functions check_payment and check_opt_in, ensuring that the fee does not exceed the fee_limit (2000 microALGO). This means the contract is not vulnerable to the 'Unchecked Transaction Fee' vulnerability as it properly validates the transaction fees.",
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "vulnerable",
+                            "description": "The contract includes checks for transaction fees in the functions check_payment and check_opt_in, ensuring that the fee does not exceed the fee_limit (2000 microALGO). This proper validation prevents the 'Unchecked Transaction Fee' vulnerability."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It is designed to authorize a group of transactions, including asset transfers. The vulnerability being analyzed is 'Unchecked Asset Close To', which is relevant for stateless smart contracts that handle asset transfers. The contract includes checks for the `asset_close_to` field in the `validate_asset_transfer` and `check_opt_in` functions, ensuring it is set to `Global.zero_address()`. This prevents any unauthorized redirection of remaining assets to an attacker's address.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract properly validates that the `asset_close_to` field is set to `Global.zero_address()` in all asset transfer transactions, mitigating the risk of unauthorized asset redirection."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal35.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. The contract checks various transaction fields such as fee, close_remainder_to, asset_close_to, and rekey_to, but it does not handle any payment transactions (TxnType.Payment). Since the vulnerability 'Unchecked Payment Receiver' specifically applies to payment transactions and the contract does not process any payment transactions, the vulnerability is not applicable.",
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract does not process any payment transactions (TxnType.Payment), so the 'Unchecked Payment Receiver' vulnerability is not applicable. The contract only checks fields like fee, close_remainder_to, asset_close_to, and rekey_to, which are unrelated to payment receivers."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a Stateless Smart Contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It checks for several security vulnerabilities such as unchecked transaction fees, close_remainder_to, asset_close_to, and rekey_to. However, the vulnerability being analyzed is 'Unchecked Asset Receiver', which pertains to validating the asset_receiver field in Asset Transfer Transactions. The contract does not handle any Asset Transfer Transactions (ASA transfers) as it only checks for fee limits, close_remainder_to, asset_close_to, and rekey_to. Since there are no asset transfer operations in the contract, the vulnerability does not apply.",
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract does not involve any Asset Transfer Transactions (ASA transfers), hence the 'Unchecked Asset Receiver' vulnerability is not applicable. The contract focuses on validating transaction fees, close_remainder_to, asset_close_to, and rekey_to fields but does not handle asset transfers."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. It authorizes transactions based on various conditions, including checks for transaction fees, close remainder to, asset close to, and rekey to fields. The vulnerability being analyzed is 'Unchecked Asset Close To', which is relevant to stateless smart contracts that authorize asset transfer transactions. The contract includes explicit checks for the asset_close_to field in all transaction sequences (txn1, txn2, txn3), ensuring it is set to Global.zero_address(). This prevents any unauthorized redirection of remaining assets to an attacker's address.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract correctly validates that the asset_close_to field is set to Global.zero_address() in all transaction sequences, preventing unauthorized asset redirection."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateless smart contract (LogicSig) as it does not use any App.* operations or define OnCompletion handlers. The contract authorizes transactions based on group index and performs various checks. The vulnerability to analyze is 'Unchecked Transaction Fee', which applies to stateless smart contracts. The contract has three transaction handlers (txn1, txn2, txn3) based on group index. txn1 and txn3 properly check the transaction fee against a fee_limit (1000 microALGO), but txn2 does not check the transaction fee at all. This means transactions with group index 1 can have any fee, making them vulnerable to the 'Unchecked Transaction Fee' attack.",
+                            "vulnerability_name": "Unchecked Transaction Fee",
+                            "status": "vulnerable",
+                            "description": "The contract is vulnerable because one of its transaction handlers (txn2) does not validate the transaction fee, allowing attackers to submit transactions with excessive fees. While txn1 and txn3 properly check fees, the lack of fee validation in txn2 creates a security loophole."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Unchecked Asset Receiver",
+            "results": [
+                {
+                    "contract_id": "pyteal36.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (application) as it uses App.* operations and defines OnCompletion handlers. The vulnerability 'Unchecked Asset Close To' applies to stateless smart contracts (smart signatures) that authorize asset transfer transactions. Since this is a stateful smart contract, the vulnerability does not apply. Additionally, the contract does not handle asset_close_to in any of its operations, but this is irrelevant because the vulnerability is not applicable to stateful contracts.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful smart contract, and the 'Unchecked Asset Close To' vulnerability only applies to stateless smart contracts. Therefore, the contract is not vulnerable to this issue."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (application) as it uses App.globalGet and App.globalPut operations, and defines and handles lifecycle events via OnCompletion handlers (NoOp, OptIn, CloseOut, UpdateApplication, DeleteApplication). The vulnerability to analyze is 'Unchecked Rekey to', which applies to stateless smart contracts (smart signatures or contract accounts) that authorize asset transfer transactions or payment transactions on behalf of user accounts. Since this is a stateful smart contract, the vulnerability does not apply. Additionally, the contract does not handle any transactions that could be rekeyed, as it only processes inner transactions for asset transfers and does not interact with the rekey_to field.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful smart contract and does not handle transactions that could be rekeyed, making it not vulnerable to the 'Unchecked Rekey to' vulnerability. The vulnerability is specific to stateless smart contracts that authorize transactions on behalf of user accounts."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it uses App.globalGet and App.globalPut operations, and defines OnCompletion handlers. The vulnerability to analyze is 'Unchecked Asset Receiver', which applies to Asset Transfer Transactions (ASA transfers). The contract's handle_noop function includes an inner transaction for asset transfer, where the asset_receiver is set to Txn.accounts[1]. However, there is no validation to ensure that Txn.accounts[1] is a whitelisted or trusted address. This lack of validation means that any address provided in Txn.accounts[1] can receive the assets, making the contract vulnerable to the Unchecked Asset Receiver vulnerability.",
+                            "vulnerability_name": "Unchecked_Asset_Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the asset_receiver field in the asset transfer transaction, allowing any address provided in Txn.accounts[1] to receive the assets. This lack of validation can lead to unauthorized redirection of tokens to malicious addresses."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it uses App.globalGet and App.globalPut operations, and defines OnCompletion handlers. The vulnerability to analyze is 'Unchecked Payment Receiver', which applies to payment transactions (TxnType.Payment). However, the contract in question does not handle any payment transactions (TxnType.Payment); instead, it handles asset transfers (TxnType.AssetTransfer) in the handle_noop function. Since the vulnerability specifically pertains to payment transactions and the contract does not process any, the vulnerability is not applicable.",
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract does not process any payment transactions (TxnType.Payment), only asset transfers (TxnType.AssetTransfer), making the 'Unchecked Payment Receiver' vulnerability not applicable."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal37.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it uses App.* operations such as App.globalGet, App.globalPut, and defines and handles lifecycle events via OnCompletion handlers (NoOp, OptIn, CloseOut, UpdateApplication, DeleteApplication). The vulnerability 'Unchecked Asset Close To' applies to stateless smart contracts (smart signatures) that authorize asset transfer transactions. Since this is a stateful smart contract, the vulnerability does not apply.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful smart contract (Application) and not a stateless smart contract (LogicSig or Contract Account). The 'Unchecked Asset Close To' vulnerability only applies to stateless smart contracts, hence the contract is not vulnerable to this issue."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it uses App.* operations and defines OnCompletion handlers. The vulnerability to analyze is 'Unchecked Rekey to', which applies to both stateless and stateful smart contracts. The contract does not explicitly check the 'rekey_to' field in any of the transactions it processes. Specifically, in the 'handle_transfer' function, which handles asset transfers, there is no validation of the 'rekey_to' field. This omission could allow an attacker to rekey the account to their own address, gaining control over it. The required security check, such as 'Txn.rekey_to() == Global.zero_address()', is missing in all transaction validations.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the 'rekey_to' field in any transactions, making it vulnerable to account takeover attacks where an attacker could rekey the account to their own address. The absence of explicit checks like 'Txn.rekey_to() == Global.zero_address()' in transaction validations leaves the contract exposed to this security risk."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a Stateful Smart Contract (Application) as it uses App.* operations (App.globalPut, App.globalGet) and defines OnCompletion handlers (handle_creation, handle_optin, handle_closeout, handle_updateapp, handle_deleteapp). The vulnerability to analyze is 'Unchecked Asset Receiver', which applies to Asset Transfer Transactions (ASA transfers). The contract includes a 'handle_transfer' function that processes asset transfers. In this function, the asset receiver is set to 'Txn.accounts[1]' without any validation against a whitelist or trusted addresses. This means the contract does not ensure that asset transfers only go to whitelisted addresses, making it vulnerable to the 'Unchecked Asset Receiver' vulnerability.",
+                            "vulnerability_name": "Unchecked_Asset_Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the asset receiver address in the 'handle_transfer' function, allowing asset transfers to any address specified in 'Txn.accounts[1]'. This lack of validation means that an attacker could redirect ASA tokens to an unauthorized address, exploiting the 'Unchecked Asset Receiver' vulnerability."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal38.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it uses App.* operations (App.globalPut, App.globalGet) and defines OnCompletion handlers (OptIn, CloseOut, UpdateApplication, DeleteApplication, NoOp). The vulnerability 'Unchecked Asset Close To' applies to stateless smart contracts (smart signatures) that authorize asset transfer transactions. Since this is a stateful smart contract, the vulnerability does not apply. Additionally, the contract does not handle asset_close_to checks, but this is irrelevant as the vulnerability is not applicable to stateful contracts.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful smart contract (Application) and the 'Unchecked Asset Close To' vulnerability only applies to stateless smart contracts (smart signatures). Therefore, the contract is not vulnerable to this issue."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses App.* operations (App.globalPut, App.globalGet) and defines and handles lifecycle events via OnCompletion handlers (OptIn, CloseOut, UpdateApplication, DeleteApplication, NoOp). The vulnerability to analyze is 'Unchecked Rekey to', which applies to stateless smart contracts (smart signatures or contract accounts) that authorize asset transfer transactions or payment transactions on behalf of user accounts. Since this is a stateful smart contract, the vulnerability does not apply. Additionally, the contract does not handle any payment or asset transfer transactions directly; it only manages state and checks conditions based on transactions.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful smart contract and does not handle payment or asset transfer transactions directly, making it not vulnerable to the 'Unchecked Rekey to' vulnerability. The vulnerability is specific to stateless smart contracts that authorize such transactions."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a Stateful Smart Contract (Application) as it uses App.* operations and defines OnCompletion handlers. The vulnerability to analyze is 'Unchecked Asset Receiver', which applies to Asset Transfer Transactions (ASA transfers). The contract includes a 'transfer' operation that checks several conditions but does not validate the asset_receiver field in the Asset Transfer Transaction. Specifically, the 'on_transfer' sequence checks the group index, transaction types, asset ID, and amount but does not verify the asset_receiver address. This missing check means the contract does not ensure that asset transfers only go to whitelisted addresses, making it vulnerable to the 'Unchecked Asset Receiver' vulnerability.",
+                            "vulnerability_name": "Unchecked_Asset_Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the asset_receiver field in Asset Transfer Transactions, allowing potential redirection of tokens to unauthorized addresses. The 'on_transfer' sequence checks various transaction details but omits validation of the asset_receiver, which is a critical security check for ASA transfers."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a Stateful Smart Contract (Application) as it uses App.* operations (App.globalPut, App.globalGet) and defines OnCompletion handlers (OptIn, CloseOut, UpdateApplication, DeleteApplication, NoOp). The vulnerability to analyze is 'Arbitrary update', which applies to contracts that allow updates via the UpdateApplication call. The contract includes a specific handler for UpdateApplication (on_update) that checks if the sender is the creator (App.globalGet(creator_key)). This ensures that only the creator can update the contract, preventing unauthorized updates.",
+                            "vulnerability_name": "arbitrary_update",
+                            "status": "not vulnerable",
+                            "description": "The contract includes a security check in the on_update handler that ensures only the creator can update the contract (Txn.sender() == App.globalGet(creator_key)). This prevents arbitrary updates by unauthorized parties."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal39.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as evidenced by the use of App.globalPut, App.globalGet, and the handling of various OnCompletion events such as OptIn, CloseOut, UpdateApplication, DeleteApplication, and NoOp. The vulnerability 'Unchecked Asset Close To' is specific to stateless smart contracts (LogicSig or Contract Account) that authorize asset transfer transactions without checking the asset_close_to field. Since this is a stateful application, the vulnerability does not apply. The contract does not handle asset transfers directly but rather interacts with them through application calls and global state management.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful application and does not directly authorize asset transfer transactions where the asset_close_to field would need to be checked. Therefore, the 'Unchecked Asset Close To' vulnerability is not applicable."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as evidenced by the use of App.globalPut, App.globalGet, and the handling of various OnCompletion events such as OptIn, CloseOut, UpdateApplication, and DeleteApplication. The vulnerability 'Unchecked Close Remainder To' is specific to stateless smart contracts (LogicSig or Contract Account) that authorize payment transactions without proper validation of the close_remainder_to field. Since this contract is stateful and does not involve payment transactions directly, the vulnerability does not apply.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful application and does not handle payment transactions directly, thus the 'Unchecked Close Remainder To' vulnerability is not applicable."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a Stateful Smart Contract (Application) as it uses App.* operations and defines OnCompletion handlers. The vulnerability to analyze is 'Unchecked Asset Receiver', which applies to Asset Transfer Transactions (ASA transfers). The contract includes three exchange handlers (on_exchange_1, on_exchange_2, on_exchange_3) that process asset transfers. In each handler, the contract checks various conditions like the transaction group index, transaction type, asset ID, and minimum amount, but it does not validate the asset_receiver field of the asset transfer transaction. This means the contract does not ensure that the asset transfer is directed to a whitelisted or intended address, making it vulnerable to the 'Unchecked Asset Receiver' vulnerability.",
+                            "vulnerability_name": "Unchecked_Asset_Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the asset_receiver field in Asset Transfer Transactions, allowing potential redirection of tokens to unauthorized addresses. The required security check (e.g., Gtxn[i].asset_receiver() == trusted_address) is missing in all exchange handlers."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a Stateful Smart Contract (Application) as it uses App.* operations and defines OnCompletion handlers. The vulnerability to analyze is 'Unchecked Payment Receiver', which applies to payment transactions (TxnType.Payment). Upon reviewing the code, there are no payment transactions being processed or validated within the contract. The contract primarily handles asset transfers and application calls, but does not include any logic for payment transactions. Therefore, the vulnerability does not apply to this contract as it does not process payment transactions where the receiver needs to be validated.",
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract does not process any payment transactions (TxnType.Payment), hence there is no need to validate payment receivers. The contract focuses on asset transfers and application calls, making the 'Unchecked Payment Receiver' vulnerability irrelevant in this context."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal40.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as evidenced by the use of App.globalPut, App.globalGet, and the handling of various OnCompletion events such as OptIn, CloseOut, UpdateApplication, and DeleteApplication. The vulnerability 'Unchecked Asset Close To' is specific to stateless smart contracts (LogicSig or Contract Account) that authorize asset transfer transactions without checking the 'asset_close_to' field. Since this contract is stateful and does not directly handle asset transfers in a way that would require checking 'asset_close_to', the vulnerability does not apply here.",
+                            "vulnerability_name": "Unchecked Asset Close To",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful application and does not involve stateless asset transfer authorization where 'asset_close_to' checks would be necessary. Therefore, it is not vulnerable to the 'Unchecked Asset Close To' issue."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses App.* operations (App.globalPut, App.globalGet) and defines OnCompletion handlers (OptIn, CloseOut, UpdateApplication, DeleteApplication, NoOp). The vulnerability to analyze is 'Unchecked Rekey to', which applies to both stateless and stateful smart contracts. The contract does not explicitly check the RekeyTo field in any of the transactions it processes, including the asset transfer transactions in the on_exchange_1, on_exchange_2, and on_exchange_3 handlers. The absence of checks like Txn.rekey_to() == Global.zero_address() or Gtxn[i].rekey_to() == Global.zero_address() means the contract is vulnerable to the Rekey-To attack.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the RekeyTo field in any of the transactions it processes, making it vulnerable to an attacker rekeying the account to their own address and taking control. This applies to all transaction types, including asset transfers and application calls."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a Stateful Smart Contract (Application) as it uses App.* operations and defines OnCompletion handlers. The vulnerability to analyze is 'Unchecked Asset Receiver', which applies to Asset Transfer Transactions (ASA transfers). The contract includes three exchange handlers (on_exchange_1, on_exchange_2, on_exchange_3) that process asset transfers. Each handler checks various conditions like group index, transaction type, asset ID, amount, and timing, but none of them validate the asset_receiver field of the asset transfer transaction. This means the contract does not ensure that the asset transfer only goes to whitelisted addresses, making it vulnerable to the 'Unchecked Asset Receiver' vulnerability.",
+                            "vulnerability_name": "Unchecked_Asset_Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the asset_receiver field in Asset Transfer Transactions, allowing attackers to redirect tokens to unauthorized addresses. The required security check (e.g., Gtxn[i].asset_receiver() == trusted_address) is missing in all exchange handlers."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a Stateful Smart Contract (Application) as it uses App.* operations (App.globalPut, App.globalGet) and defines OnCompletion handlers (OptIn, CloseOut, UpdateApplication, DeleteApplication, NoOp). The contract manages asset exchanges with timing constraints but does not handle any payment transactions (TxnType.Payment). All transactions in the contract are either AssetTransfer or ApplicationCall types. Since there are no payment transactions, the Unchecked Payment Receiver vulnerability does not apply.",
+                            "vulnerability_name": "Unchecked Payment Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract does not process any payment transactions (TxnType.Payment), hence there is no risk of unauthorized fund redirection. The vulnerability is not applicable as the contract only deals with asset transfers and application calls."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Unchecked Payment Receiver",
+            "results": [
+                {
+                    "contract_id": "pyteal41.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses App.* operations (App.globalPut, App.globalGet) and defines OnCompletion handlers (handle_creation, handle_optin, handle_closeout, handle_updateapp, handle_deleteapp, handle_payment). The vulnerability to analyze is 'Unchecked Rekey to', which applies to both stateless and stateful smart contracts. The contract includes a payment handling function (handle_payment) but does not explicitly check the rekey_to field of the transaction. The required security check for this vulnerability is to ensure that all payment and asset transfer transactions explicitly verify that their rekey_to field is set to Global.zero_address(). This check is missing in the handle_payment function.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the rekey_to field in the payment transaction, which could allow an attacker to steal complete control of the account by setting rekey_to to their address. The required check Txn.rekey_to() == Global.zero_address() is missing in the handle_payment function."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as evidenced by the use of App.globalPut, App.globalGet, and the definition of various OnCompletion handlers (handle_creation, handle_optin, handle_closeout, handle_updateapp, handle_deleteapp, handle_payment). The vulnerability 'Unchecked Close Remainder To' is specific to stateless smart contracts (LogicSig or Contract Account) that authorize payment transactions without checking the close_remainder_to field. Since this is a stateful smart contract, the vulnerability does not apply.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful smart contract, and the 'Unchecked Close Remainder To' vulnerability only applies to stateless smart contracts. Therefore, the contract is not vulnerable to this issue."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses App.* operations and defines OnCompletion handlers. The vulnerability to analyze is 'Arbitrary update', which checks if the contract allows unauthorized updates. The contract includes a handler for UpdateApplication (handle_updateapp) that checks if the sender is the creator (stored in global state under 'Creator'). This ensures that only the creator can update the application, preventing arbitrary updates by unauthorized parties.",
+                            "vulnerability_name": "arbitrary_update",
+                            "status": "not vulnerable",
+                            "description": "The contract includes a security check in the handle_updateapp handler that verifies the sender is the creator (App.globalGet(creator_key)), effectively preventing unauthorized updates."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code is a stateful smart contract (Application) as it uses App.globalPut and handles various OnCompletion events. The vulnerability to analyze is 'Unchecked Asset Receiver', which applies to Asset Transfer Transactions (ASA transfers). However, the contract in question does not handle any Asset Transfer Transactions; it only handles Payment Transactions (TxnType.Payment) in the 'handle_payment' function. Since there are no Asset Transfer Transactions being processed, the vulnerability does not apply to this contract. The contract does validate the Payment Transaction's amount and type, but this is unrelated to the 'Unchecked Asset Receiver' vulnerability.",
+                            "vulnerability_name": "Unchecked Asset Receiver",
+                            "status": "not vulnerable",
+                            "description": "The contract does not process any Asset Transfer Transactions, hence the 'Unchecked Asset Receiver' vulnerability is not applicable. The contract only handles Payment Transactions and validates the amount and type, which is unrelated to the vulnerability in question."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal42.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses App.globalPut and App.globalGet operations and defines OnCompletion handlers (NoOp, ClearState). The contract manages a pension fund where users can deposit and withdraw funds. The vulnerability to analyze is 'Unchecked Payment Receiver', which occurs when a smart contract fails to properly validate the recipient address in payment transactions. In the handle_withdraw function, the contract processes a withdrawal by creating an inner payment transaction where the receiver is set to Gtxn[1].accounts[1]. However, there is no validation to ensure that this receiver address is authorized or whitelisted. This missing check means that an attacker could potentially specify any address as the receiver, leading to unauthorized fund transfers.",
+                            "vulnerability_name": "Unchecked_Payment_Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the receiver address in the payment transaction during withdrawals, allowing potential redirection of funds to unauthorized addresses. A legitimate check such as Txn.receiver() == valid_receiver or Gtxn[i].receiver() == valid_receiver is missing."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (application) as evidenced by the use of App.globalPut, App.globalGet, and the handling of lifecycle events such as NoOp and ClearState. The vulnerability being analyzed, 'Unchecked Close Remainder To', is specific to stateless smart contracts (logic signatures) that authorize payment transactions. Since this is a stateful application, the vulnerability does not apply. The contract does not directly handle payment transactions that could have a 'close_remainder_to' field; instead, it manages a pension fund and processes withdrawals via inner transactions, which are not subject to the same vulnerability.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful application and does not authorize payment transactions directly, making it not vulnerable to the 'Unchecked Close Remainder To' issue which is specific to stateless contracts."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses App.globalPut and App.globalGet operations and handles lifecycle events via OnCompletion handlers (NoOp, ClearState). The vulnerability to analyze is 'Arbitrary update', which checks if the contract allows unrestricted updates. The contract does not explicitly handle the OnComplete.UpdateApplication case in its Cond statement, meaning any attempt to update the application will fail by default. This effectively prevents unauthorized updates, as the contract does not include any logic to handle update requests.",
+                            "vulnerability_name": "arbitrary_update",
+                            "status": "not vulnerable",
+                            "description": "The contract does not handle OnComplete.UpdateApplication, making it impossible to update the contract logic after deployment. This default behavior prevents any unauthorized updates, ensuring the contract is not vulnerable to arbitrary updates."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal43.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses App.* operations such as App.globalGet, App.globalPut, and defines and handles lifecycle events via OnCompletion handlers (NoOp, OptIn, CloseOut, UpdateApplication, DeleteApplication, etc.). The vulnerability 'Unchecked Close Remainder To' is specific to stateless smart contracts (LogicSig or Contract Account) that authorize payment transactions without maintaining any application state. Since the contract in question is stateful and does not involve any payment transactions that would require checking the 'close_remainder_to' field, the vulnerability does not apply.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful smart contract and does not handle payment transactions that would require validation of the 'close_remainder_to' field. Therefore, the vulnerability 'Unchecked Close Remainder To' is not applicable."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses App.* operations (App.globalPut, App.globalGet) and defines and handles lifecycle events via OnCompletion handlers (NoOp, UpdateApplication, DeleteApplication, CloseOut, OptIn). The vulnerability to analyze is 'Unchecked Rekey to', which applies to both stateless and stateful smart contracts. In the context of stateful smart contracts, this vulnerability occurs when the contract fails to validate the RekeyTo field in transactions, potentially allowing attackers to steal complete control of accounts. The contract does not explicitly check the RekeyTo field in any of its transactions, including the inner transaction in the 'withdraw' handler. The inner transaction sets the receiver but does not validate the RekeyTo field, which could lead to a security risk if an attacker can manipulate the transaction to include a malicious RekeyTo address.",
+                            "vulnerability_name": "Unchecked Rekey to",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the RekeyTo field in any of its transactions, including the inner payment transaction in the 'withdraw' handler. This omission could allow an attacker to rekey the contract account to a malicious address, taking control of the account. The required security check, such as Txn.rekey_to() == Global.zero_address() or Gtxn[i].rekey_to() == Global.zero_address(), is missing."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a Stateful Smart Contract (Application) as it uses App.* operations and defines OnCompletion handlers. The vulnerability to analyze is 'Unchecked Payment Receiver', which applies to payment transactions where the receiver must be authorized. In the 'withdraw' function, the contract initiates a payment transaction using InnerTxnBuilder, setting the receiver to Gtxn[1].receiver(). However, there is no validation of the receiver address to ensure it is authorized or whitelisted. This means any address provided in the second transaction of the group can receive the pension payment, making the contract vulnerable to the 'Unchecked Payment Receiver' vulnerability.",
+                            "vulnerability_name": "Unchecked_Payment_Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the receiver address in the payment transaction initiated by the 'withdraw' function, allowing unauthorized addresses to receive funds. This missing check makes the contract vulnerable to the 'Unchecked Payment Receiver' vulnerability."
+                        },
+                        {
+                            "reasoning": "The contract is a Stateful Smart Contract (Application) as it uses App.* operations and defines OnCompletion handlers. The vulnerability to analyze is 'Arbitrary update', which checks if the contract allows unrestricted updates. The contract handles the UpdateApplication call in the 'set_pension' sequence, but it does not restrict updates to the creator or admin. Instead, it allows the company (Txn.sender() == App.globalGet(company_key)) to update the contract. This means that if the company key is compromised or if the company itself is malicious, it can update the contract with harmful logic. The required security check to restrict updates to the creator or admin is not fully implemented, as it only checks for the company key, which may not be the same as the creator or a designated admin.",
+                            "vulnerability_name": "arbitrary_update",
+                            "status": "vulnerable",
+                            "description": "The contract allows updates by the company key, which is not necessarily the creator or a designated admin. This makes it vulnerable to arbitrary updates if the company key is compromised or misused. The contract should restrict updates to the creator or a designated admin to prevent unauthorized updates."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal44.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (Application) as it uses App.globalPut and App.globalGet operations and defines OnCompletion handlers. The vulnerability to analyze is 'Unchecked Payment Receiver', which occurs when a smart contract fails to properly validate the recipient address in payment transactions. In the 'pagamento' function, the contract checks the sender is the admin and the balance is sufficient, but it does not validate the receiver of the payment transaction (Gtxn[1].receiver()). This missing validation means the payment could be sent to any address, not just the intended recipient stored in the 'Recipient' global state variable.",
+                            "vulnerability_name": "Unchecked_Payment_Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract does not validate the receiver address in the payment transaction (Gtxn[1].receiver()), allowing funds to be sent to any address. A proper check like Gtxn[1].receiver() == App.globalGet(recipient_key) should be added to ensure payments only go to the authorized recipient."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (application) as evidenced by the use of App.globalPut, App.globalGet, and handling of various OnCompletion events (NoOp, UpdateApplication, OptIn). The vulnerability 'Unchecked Close Remainder To' is specific to stateless smart contracts (logic signatures) that authorize payment transactions without proper checks on the close_remainder_to field. Since this is a stateful contract, the vulnerability does not apply.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful application, not a stateless logic signature, and thus the 'Unchecked Close Remainder To' vulnerability does not apply. Stateful contracts manage their own state and lifecycle events but do not directly authorize payment transactions in a way that would expose them to this specific vulnerability."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a Stateful Smart Contract (Application) as it uses App.* operations (App.globalPut, App.globalGet) and handles lifecycle events via OnCompletion handlers (NoOp, UpdateApplication, OptIn). The vulnerability to analyze is 'Arbitrary update', which checks if the contract allows unrestricted updates. The contract handles the UpdateApplication event in the 'set_recipient' branch, but it does not restrict updates to the creator or admin. Instead, it incorrectly uses the 'set_recipient' logic for updates, which is not a security check. The required security check should verify that the sender is the creator or admin before allowing an update, but this is missing.",
+                            "vulnerability_name": "arbitrary_update",
+                            "status": "vulnerable",
+                            "description": "The contract does not properly restrict updates to the creator or admin. The UpdateApplication handler incorrectly uses the 'set_recipient' logic without verifying the sender's authority, allowing any sender to update the contract."
+                        }
+                    ]
+                },
+                {
+                    "contract_id": "pyteal45.json",
+                    "detected_vulns": [
+                        {
+                            "reasoning": "The provided PyTeal code implements a Stateful Smart Contract (Application) as it uses App.globalPut and App.globalGet operations and defines OnCompletion handlers (NoOp, OptIn). The vulnerability to analyze is Unchecked Payment Receiver, which applies to TxnType.Payment transactions. The contract includes a distribute_funds function that processes payment transactions (Gtxn[0].type_enum() == TxnType.Payment). However, it does not validate the receiver address of the payment transaction (Gtxn[0].receiver()). This missing validation means the contract does not ensure payments only go to whitelisted addresses, making it vulnerable to the Unchecked Payment Receiver vulnerability.",
+                            "vulnerability_name": "Unchecked_Payment_Receiver",
+                            "status": "vulnerable",
+                            "description": "The contract fails to validate the receiver address in payment transactions, allowing potential redirection of funds to unauthorized addresses. The distribute_funds function checks the sender and type of the transaction but does not verify the receiver address, which is a critical security check missing in the contract."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a stateful smart contract (application) as evidenced by the use of App.globalPut, App.globalGet, and handling of OnCompletion events like NoOp and OptIn. The vulnerability 'Unchecked Close Remainder To' is specific to stateless smart contracts (logic signatures) that authorize payment transactions. Since this is a stateful application, the vulnerability does not apply. The contract does not handle payment transactions directly but manages funds through application calls and global state.",
+                            "vulnerability_name": "Unchecked Close Remainder To",
+                            "status": "not vulnerable",
+                            "description": "The contract is a stateful application and does not authorize payment transactions directly, making it not vulnerable to the 'Unchecked Close Remainder To' issue which is specific to stateless contracts."
+                        },
+                        {
+                            "reasoning": "The provided PyTeal code implements a Stateful Smart Contract (Application) as it uses App.globalPut and App.globalGet operations and handles lifecycle events via OnCompletion handlers (NoOp, OptIn). The vulnerability to analyze is 'Arbitrary update', which applies to contracts that allow updates via the UpdateApplication transaction. The contract does not explicitly handle the OnComplete.UpdateApplication case in its Cond statement, which means any attempt to update the application will fail by default. This effectively prevents unauthorized updates, as the contract does not include any logic to handle or allow updates.",
+                            "vulnerability_name": "arbitrary_update",
+                            "status": "not vulnerable",
+                            "description": "The contract does not handle the OnComplete.UpdateApplication case, making it impossible to update the application logic. This default behavior prevents any unauthorized updates, ensuring the contract is not vulnerable to arbitrary updates."
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
