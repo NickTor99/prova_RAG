@@ -8,12 +8,6 @@ dist/
 build/
 .eggs/
 
-# Virtual environment
-venv/
-env/
-ENV/
-.venv/
-
 # File temporanei del sistema operativo
 .DS_Store
 Thumbs.db
