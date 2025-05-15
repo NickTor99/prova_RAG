@@ -13,6 +13,12 @@ build/
 Thumbs.db
 desktop.ini
 
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+
 # File di configurazione di PyCharm / IntelliJ
 .idea/
 *.iml
